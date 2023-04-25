@@ -2,8 +2,9 @@ import React, { useEffect, useRef } from 'react'
 import styles from '@/styles/BlocklyComponent.module.css'
 import Blockly from 'blockly'
 import { PropsWithChildren } from 'react'
-import { qasmGenerator, useCollection } from '@/generator/generator'
-import { QasmBlockCollection } from '@/generator/generatorCollection'
+import { QasmBlockly } from '@/generator/generatorCollection'
+
+
 
 type BlocklyComponentProps = {
   trashcan: boolean
@@ -24,7 +25,12 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
     if (blocklyDiv.current && toolbox.current && !workspaceInjected.current) {
       primaryWorkspace.current = Blockly.inject(blocklyDiv.current, {
         toolbox: toolbox.current,
-        ...rest
+        ...rest,
+        grid: {
+          length: 8,
+          spacing: 40,
+          snap: true,
+        }
       })
       workspaceInjected.current = true
 
@@ -33,9 +39,8 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
         console.log(props.setQASM);
 
         const qasm = generateCode().qasm;
-        let qasm_string = qasm.reduce((previous_string, current_string) => previous_string + current_string[0]);
 
-        props.setQASM(qasm_string);
+        props.setQASM(qasm + '');
       })
     }
   }, [primaryWorkspace, toolbox, blocklyDiv, props])
@@ -44,12 +49,12 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
 
   // populate the collection with nodes
   const generateCode = () => {
-    const collection = new QasmBlockCollection()
-    useCollection(collection)
-    var code = qasmGenerator.workspaceToCode(primaryWorkspace.current)
-    console.log(collection.blocks)
-    const compiled = collection.compile();
+    const collection = new QasmBlockly()
+    console.log(collection.getBlocks())
+    const compiled = collection.compile(primaryWorkspace.current);
     console.log(compiled);
+
+
     return compiled;
   }
 

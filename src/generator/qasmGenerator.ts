@@ -3,7 +3,7 @@
 // measurement block - measures a number of qubits, records the result in a classical bit for each qubit
 // custom blocks/gates - takes a list of qubits and a list of gates, does some operations on them
 
-import { QasmBlockCollection } from "./generatorCollection"
+import { QasmBlockly } from "./generatorCollection"
 
 const built_in_gates = {
   h: {
@@ -331,7 +331,7 @@ var errors = []
  * qubit_operands - an array of numbers, representing the qubits that the block operates on, in order.
  */
 function generate_QASM (collection: QasmBlockCollection) {
-    const blocks = collection.blocks;
+    const blocks = collection.getBlocks();
   // puts all the variables into this object, with names as the keys.
   // checks for duplicates
   // TODO: possibly check variable dependancies for cycles

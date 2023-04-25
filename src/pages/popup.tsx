@@ -10,23 +10,23 @@ import ProbabilitiesGraph from '../components/Graph'
 import QasmText from '../components/QasmOutput'
 import AppContainer from './app'
 
-const Home = () => {
+export default function Popup ({
+  svg,
+  closeFn
+}: {
+  svg: any
+  closeFn: () => void
+}) {
   //console.log(data, qasmBox);
   return (
-    <>
-      <Head>
-        <title>Quokka Blockly</title>
-        <meta
-          name='description'
-          content='blockly app for the qasm language to be used by the Quokka computer'
-        />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
-
-      <AppContainer/>
-    </>
+    <div className={styles.popup}>
+      <div className={styles.popup_content}>
+        <a href='#' className={styles.popup_close} onClick={closeFn}>
+          &times;
+        </a>
+        <h3>QASM Circuit</h3>
+        <div dangerouslySetInnerHTML={{ __html: svg }}></div>
+      </div>
+    </div>
   )
 }
-
-export default Home

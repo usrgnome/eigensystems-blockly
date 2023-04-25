@@ -2,7 +2,13 @@ import Editor, { Monaco } from '@monaco-editor/react'
 import styles from '@/styles/Home.module.css'
 import React, { useState } from 'react'
 
-export default function CodeArea ({ code }: { code: string }) {
+export default function CodeArea ({
+  code,
+  showCircuit
+}: {
+  code: string
+  showCircuit: () => any
+}) {
   const [codetxt, setCode] = useState('')
   const [txt, setTxt] = useState('')
 
@@ -21,19 +27,11 @@ export default function CodeArea ({ code }: { code: string }) {
         }}
       />
       <button
-        onClick={() => {
-          setCode('Hello world')
-        }}
+        onClick={showCircuit}
         className={styles.convertBtn}
       >
-        {txt}
+        Show circuit
       </button>
-      <input type="text" onChange={(e) => {
-        const text = e.currentTarget.value;
-        setTxt(text);
-        console.log(text);
-
-      }}></input>
     </div>
   )
 }
