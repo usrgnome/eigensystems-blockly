@@ -102,12 +102,6 @@ export class QASMBlocklyGenerator {
     this.qasmGenerator['n_bit_toffoli_to_qasm'] = this.n_bit_toffoli_to_qasm.bind(this)
   }
 
-  /*test_input (block: Blockly.Block) {
-    const code = block.getFieldValue('DROP')
-    console.log(code)
-    return 'test'
-  }*/
-
   test_addition (block: Blockly.Block) {
     var value_x = this.qasmGenerator.valueToCode(block, 'X', ORDER.ATOMIC)
     var value_y = this.qasmGenerator.valueToCode(block, 'Y', ORDER.ATOMIC)
