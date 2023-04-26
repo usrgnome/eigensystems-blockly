@@ -19,7 +19,7 @@ function ProbabilitiesGraph({ data }: GraphProps) {
                 }}>
                     <CartesianGrid strokeDasharray="5 5" />
                     <XAxis dataKey="vector_string" domain={[0]} label={{ value: 'states', position: 'bottom', offset: -8 }} />
-                    <YAxis datakey="probability" domain={[0, 100]} name="probability" label={{ value: 'Probability', angle: -90, position: 'insideLeft' }} />
+                    <YAxis dataKey="probability" domain={[0, 100]} name="probability" label={{ value: 'Probability', angle: -90, position: 'insideLeft' }} />
                     <Tooltip />
                     <Legend />
                     <Bar dataKey="chance" legendType='none' fill="#123ABC" />
