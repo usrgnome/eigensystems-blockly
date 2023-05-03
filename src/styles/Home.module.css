@@ -1,14 +1,77 @@
+@font-face {
+  font-family: Lato;
+  font-style: italic;
+  font-weight: 400;
+  src: local("Lato Italic"), local("Lato-Italic"), url(https://fonts.gstatic.com/s/lato/v14/cT2GN3KRBUX69GVJ2b2hxn-_kf6ByYO6CLYdB4HQE-Y.woff2) format("woff2");
+  unicode-range: U+0100-024f, U+0259, U+1e??, U+20a0-20ab, U+20ad-20cf, U+2c60-2c7f, U+a720-a7ff
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: italic;
+  font-weight: 400;
+  src: local("Lato Italic"), local("Lato-Italic"), url(https://fonts.gstatic.com/s/lato/v14/1KWMyx7m-L0fkQGwYhWwuuvvDin1pK8aKteLpeZ5c0A.woff2) format("woff2");
+  unicode-range: U+00??, U+0131, U+0152-0153, U+02bb-02bc, U+02c6, U+02da, U+02dc, U+2000-206f, U+2074, U+20ac, U+2122, U+2212, U+2215
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: italic;
+  font-weight: 700;
+  src: local("Lato Bold Italic"), local("Lato-BoldItalic"), url(https://fonts.gstatic.com/s/lato/v14/AcvTq8Q0lyKKNxRlL28Rn4X0hVgzZQUfRDuZrPvH3D8.woff2) format("woff2");
+  unicode-range: U+0100-024f, U+0259, U+1e??, U+20a0-20ab, U+20ad-20cf, U+2c60-2c7f, U+a720-a7ff
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: italic;
+  font-weight: 700;
+  src: local("Lato Bold Italic"), local("Lato-BoldItalic"), url(https://fonts.gstatic.com/s/lato/v14/HkF_qI1x_noxlxhrhMQYEJBw1xU1rKptJj_0jans920.woff2) format("woff2");
+  unicode-range: U+00??, U+0131, U+0152-0153, U+02bb-02bc, U+02c6, U+02da, U+02dc, U+2000-206f, U+2074, U+20ac, U+2122, U+2212, U+2215
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 400;
+  src: local("Lato Regular"), local("Lato-Regular"), url(https://fonts.gstatic.com/s/lato/v14/8qcEw_nrk_5HEcCpYdJu8BTbgVql8nDJpwnrE27mub0.woff2) format("woff2");
+  unicode-range: U+0100-024f, U+0259, U+1e??, U+20a0-20ab, U+20ad-20cf, U+2c60-2c7f, U+a720-a7ff
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 400;
+  src: local("Lato Regular"), local("Lato-Regular"), url(https://fonts.gstatic.com/s/lato/v14/MDadn8DQ_3oT6kvnUq_2r_esZW2xOQ-xsNqO47m55DA.woff2) format("woff2");
+  unicode-range: U+00??, U+0131, U+0152-0153, U+02bb-02bc, U+02c6, U+02da, U+02dc, U+2000-206f, U+2074, U+20ac, U+2122, U+2212, U+2215
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 700;
+  src: local("Lato Bold"), local("Lato-Bold"), url(https://fonts.gstatic.com/s/lato/v14/rZPI2gHXi8zxUjnybc2ZQFKPGs1ZzpMvnHX-7fPOuAc.woff2) format("woff2");
+  unicode-range: U+0100-024f, U+0259, U+1e??, U+20a0-20ab, U+20ad-20cf, U+2c60-2c7f, U+a720-a7ff
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 700;
+  src: local("Lato Bold"), local("Lato-Bold"), url(https://fonts.gstatic.com/s/lato/v14/MgNNr5y1C_tIEuLEmicLmwLUuEpTyoUstqEm5AMlJo4.woff2) format("woff2");
+  unicode-range: U+00??, U+0131, U+0152-0153, U+02bb-02bc, U+02c6, U+02da, U+02dc, U+2000-206f, U+2074, U+20ac, U+2122, U+2212, U+2215
+}
+
 .main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 6rem;
-  min-height: 100vh;
+  position: relative;
 }
 
 .blockly {
-  width: 70%;
+  width: 100%;
   height: 100%;
 }
 
@@ -20,18 +83,15 @@
   right: 0;
   overflow: visible;
   background-color: #12b5cd;
-  border-radius: 6px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.3);
-  margin: 10px;
   display: flex;
   flex-direction: row;
   row-gap: 10px;
   gap: 10px;
-  padding: 10px;
 }
 
 .outputDiv {
-  width: 30%;
+  width: 100%;
   background-color: #fff;
   overflow: scroll;
   padding: 8px;
@@ -68,7 +128,7 @@
 .container {
   position: relative;
   width: 100%;
-  height: 100%;
+  flex-grow: 1;
 }
 
 .popup {
@@ -85,10 +145,17 @@
   padding: 20px;
   border: 1px solid #888;
   border-radius: 5px;
-  box-shadow:4px 4px 12px 2px #d2d2d2;
+  box-shadow: 4px 4px 12px 2px #d2d2d2;
   width: 100%;
   height: 100%;
   min-width: 200px;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
 }
 
 .popup_close {
@@ -104,4 +171,44 @@
 
 .popup_close:hover {
   color: #333;
+}
+
+.navbar {
+  display: flex;
+  flex-direction: row;
+  background-color: #1b1c1d;
+}
+
+
+
+.navbarBtn {
+  align-items: center;
+  vertical-align: middle;
+  font-family: inherit;
+  font-size: 1rem;
+  text-shadow: none;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-decoration: none !important;
+  font-weight: 400 !important;
+  cursor: pointer;
+  background: #1b1c1d;
+  color: #fff;
+  padding: 15px;
+  border: var(--cp-button-border-width) solid transparent;
+  text-align: center;
+  justify-content: center;
+  font-family: Lato, Helvetica Neue, Arial, Helvetica, sans-serif;
+  display: flex;
+}
+
+.navbarBtnIcon {
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+}
+
+.navbarBtn:hover {
+  background-color: #3d3d3f;
 }

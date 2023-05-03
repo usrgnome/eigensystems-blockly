@@ -4,8 +4,10 @@ import React, { useState } from 'react'
 
 export default function CodeArea ({
   code,
-  showCircuit
+  showCircuit,
+  visible
 }: {
+  visible: boolean;
   code: string
   showCircuit: () => any
 }) {
@@ -15,13 +17,14 @@ export default function CodeArea ({
   console.log(codetxt, code, 'WTF!!!!1')
 
   return (
-    <div className={styles.outputDiv}>
+    <div className={styles.outputDiv} style={{display: visible ? "block" : "none"}}>
       <Editor
         height='100%'
         width='100%'
         defaultLanguage=''
         defaultValue={code}
         value={code}
+        options={{readOnly: true}}
         onMount={a => {
           //console.log('wtf', a);
         }}
@@ -30,7 +33,7 @@ export default function CodeArea ({
         onClick={showCircuit}
         className={styles.convertBtn}
       >
-        Show circuit
+        Show circuit {visible ? "true" : "false"}
       </button>
     </div>
   )

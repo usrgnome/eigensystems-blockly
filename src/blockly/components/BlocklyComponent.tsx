@@ -4,8 +4,6 @@ import Blockly from 'blockly'
 import { PropsWithChildren } from 'react'
 import { QasmBlockly } from '@/generator/generatorCollection'
 
-
-
 type BlocklyComponentProps = {
   trashcan: boolean
   media: string
@@ -18,6 +16,7 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
   const toolbox = useRef<HTMLInputElement | null>(null)
   const primaryWorkspace = useRef<Blockly.WorkspaceSvg | null>(null)
   const workspaceInjected = useRef(false)
+  const newBlock = useRef<Blockly.Block | null>(null)
 
   useEffect(() => {
     const { ...rest } = props
@@ -26,22 +25,36 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
       primaryWorkspace.current = Blockly.inject(blocklyDiv.current, {
         toolbox: toolbox.current,
         ...rest,
-        grid: {
-          length: 8,
-          spacing: 40,
-          snap: true,
-        }
+        zoom:
+         {controls: true,
+          wheel: true,
+          startScale: 1.0,
+          maxScale: 3,
+          minScale: 0.3,
+          scaleSpeed: 1.2,
+          pinch: true},
       })
       workspaceInjected.current = true
 
       primaryWorkspace.current.addChangeListener(() => {
-        console.log('change occured!!!!');
-        console.log(props.setQASM);
+        console.log('change occured!!!!')
+        console.log(props.setQASM)
 
-        const qasm = generateCode().qasm;
+        const qasm = generateCode().qasm
 
-        props.setQASM(qasm + '');
+        props.setQASM(qasm + '')
       })
+
+      /*
+
+      */
+
+      var blockName = 'entry' // Name of block to add
+
+      const block = (newBlock.current =
+        primaryWorkspace.current.newBlock(blockName))
+      block.initSvg()
+      block.render()
     }
   }, [primaryWorkspace, toolbox, blocklyDiv, props])
 
@@ -51,11 +64,10 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
   const generateCode = () => {
     const collection = new QasmBlockly()
     console.log(collection.getBlocks())
-    const compiled = collection.compile(primaryWorkspace.current);
-    console.log(compiled);
+    const compiled = collection.compile(primaryWorkspace.current, newBlock.current);
+    console.log(compiled)
 
-
-    return compiled;
+    return compiled
   }
 
   return (
