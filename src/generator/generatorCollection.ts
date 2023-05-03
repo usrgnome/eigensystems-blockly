@@ -17,7 +17,7 @@ export class QasmBlockly {
 
     const ret = generate_QASM(this)
     let qasm_string = ret.qasm.reduce(
-      (previous_string, current_string) => previous_string + current_string[0]
+      (previous_string, current_string) => previous_string.concat(current_string[0])
     )
 
     return {

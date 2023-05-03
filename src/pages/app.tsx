@@ -25,9 +25,9 @@ export default function AppContainer ({ mode }: { mode: string }) {
   }
 
   const circuit = new QuantumCircuit(3)
-  circuit.importQASM(qasmBox, err => {
-    if (err && err.length > 0) return console.log('error', qasmBox, err)
-  })
+circuit.importQASM(qasmBox, (err: string[]) => {
+  if (err && err.length > 0) return console.log('error', qasmBox, err)
+})
 
   const svg = circuit.exportSVG(true)
   console.log(svg)

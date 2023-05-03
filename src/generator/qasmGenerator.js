@@ -330,7 +330,7 @@ var errors = []
  * parameters - an array of numbers, to be the parameters of the gate, e.g cu3(parameter1, parameter2, parameter3)
  * qubit_operands - an array of numbers, representing the qubits that the block operates on, in order.
  */
-function generate_QASM (collection: QasmBlockCollection) {
+function generate_QASM (collection) {
     const blocks = collection.getBlocks();
   // puts all the variables into this object, with names as the keys.
   // checks for duplicates
