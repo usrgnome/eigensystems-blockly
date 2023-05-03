@@ -68,6 +68,20 @@ addBlock('test_input' ,  {
   "helpUrl": ""
 });
 
+// program entry block
+addBlock('entry' , {
+  "type": "entry",
+  "message0": "Program entry",
+  "args0": [
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 230,
+  "tooltip": "",
+  "helpUrl": ""
+});
+
 //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#v8faew
 addBlock('test_x_gate' , {
   "type": "x_gate",

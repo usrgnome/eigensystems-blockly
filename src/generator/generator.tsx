@@ -100,6 +100,39 @@ export class QASMBlocklyGenerator {
     this.qasmGenerator['custom_function_def'] = this.custom_function_def.bind(this)
     this.qasmGenerator['custom_function_ref'] = this.custom_function_ref.bind(this)
     this.qasmGenerator['n_bit_toffoli_to_qasm'] = this.n_bit_toffoli_to_qasm.bind(this)
+    this.qasmGenerator['entry'] = this.entry.bind(this)
+  }
+
+  // scan workspace for toplevel function declarations and parse them first
+  convertWorkspace(workspace: Blockly.Workspace){
+    const blocks = workspace.getTopBlocks(true);
+
+    this.qasmGenerator.init(workspace);
+
+    for (let b = 0; b < blocks.length; b++) {
+    	var block = blocks[b];
+      if(block.type === "custom_function_def") {
+        this.qasmGenerator.blockToCode(block)
+      }
+    }
+  }
+
+  // begin parsing at the entry block
+  convertBlock(block: Blockly.Block){
+    this.qasmGenerator.blockToCode(block)
+  } 
+
+  /*test_input (block: Blockly.Block) {
+    const code = block.getFieldValue('DROP')
+    console.log(code)
+    return 'test'
+  }*/
+
+  entry(block: Blockly.Block){
+    console.log(block);
+    var code = 'lol';
+    // TODO: Change ORDER_NONE to the correct strength.
+    return code;
   }
 
   test_addition (block: Blockly.Block) {

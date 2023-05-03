@@ -9,9 +9,17 @@ import { titles as variableBlocksTitles } from '../blockly/blocks/variableblocks
 import ProbabilitiesGraph from '../components/Graph'
 import QasmText from '../components/QasmOutput'
 import AppContainer from './app'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faCode,
+  faICursor,
+  faMousePointer,
+  faPlay
+} from '@fortawesome/free-solid-svg-icons'
 
 const Home = () => {
-  //console.log(data, qasmBox);
+  const [mode, setMode] = useState('d&d')
+
   return (
     <>
       <Head>
@@ -24,7 +32,43 @@ const Home = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <AppContainer/>
+      <div className={styles.app}>
+        <div className={styles.navbar}>
+          <div
+            className={styles.navbarBtn}
+            onClick={() => {
+              setMode('d&d')
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faMousePointer}
+              className={styles.navbarBtnIcon}
+            ></FontAwesomeIcon>{' '}
+            Drag & Drop
+          </div>
+          <div
+            className={styles.navbarBtn}
+            onClick={() => {
+              setMode('inspect')
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faCode}
+              className={styles.navbarBtnIcon}
+            ></FontAwesomeIcon>
+            Inspect Code
+          </div>
+          <div className={styles.navbarBtn}>
+            <FontAwesomeIcon
+              icon={faPlay}
+              className={styles.navbarBtnIcon}
+            ></FontAwesomeIcon>
+            Run
+          </div>
+        </div>
+
+        <AppContainer mode={mode} />
+      </div>
     </>
   )
 }
