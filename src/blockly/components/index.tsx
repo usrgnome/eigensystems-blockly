@@ -15,6 +15,7 @@ export const Block = (p: PropsWithChildren<BlockProps>) => {
 
 type CategoryProps = {
     name: string
+    categoryStyle?: string;
 }
 
 export const Category = (p: PropsWithChildren<CategoryProps>) => {

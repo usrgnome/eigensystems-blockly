@@ -1,6 +1,6 @@
 import Blockly from 'blockly';
 
-export const titles : string[] = [];
+export const titles: string[] = [];
 
 const addBlock = (name: string, json: object) => {
     titles.push(name)
@@ -10,6 +10,40 @@ const addBlock = (name: string, json: object) => {
         }
     };
 }
+
+addBlock('comparison_block', {
+    "type": "comparison_block",
+    "message0": "%1 %2 %3",
+    "args0": [
+        {
+            "type": "input_value",
+            "name": "A",
+            "check": "Number"
+        },
+        {
+            "type": "field_dropdown",
+            "name": "OPERATOR",
+            "options": [
+                ["=", "EQ"],
+                ["\u2260", "NEQ"],
+                ["<", "LT"],
+                ["\u2264", "LTE"],
+                [">", "GT"],
+                ["\u2265", "GTE"]
+            ]
+        },
+        {
+            "type": "input_value",
+            "name": "B",
+            "check": "Number"
+        }
+    ],
+    "inputsInline": true,
+    "output": "Boolean",
+    "colour": 210,
+    "tooltip": "Comparison block",
+    "helpUrl": ""
+})
 
 //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#thggpb
 addBlock('var_def_gate', {
@@ -52,7 +86,7 @@ addBlock('var_def_gate', {
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 230,
+    "colour": "%{BKY_VARIABLES_HUE}",
     "tooltip": "",
     "helpUrl": ""
 });
@@ -69,7 +103,7 @@ addBlock('var_ref_gate', {
     ],
     "inputsInline": true,
     "output": null,
-    "colour": 230,
+    "colour": "%{BKY_VARIABLES_HUE}",
     "tooltip": "",
     "helpUrl": ""
 });
@@ -102,7 +136,7 @@ addBlock('assignment_block', {
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 230,
+    "colour": "%{BKY_VARIABLES_HUE}",
     "tooltip": "",
     "helpUrl": ""
 });
@@ -149,7 +183,7 @@ addBlock('expression_block', {
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 230,
+    "colour": "%{BKY_VARIABLES_HUE}",
     "tooltip": "",
     "helpUrl": ""
 });

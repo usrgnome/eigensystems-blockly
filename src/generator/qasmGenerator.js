@@ -3,8 +3,6 @@
 // measurement block - measures a number of qubits, records the result in a classical bit for each qubit
 // custom blocks/gates - takes a list of qubits and a list of gates, does some operations on them
 
-import { QasmBlockly } from "./generatorCollection"
-
 const built_in_gates = {
   h: {
     gate_name: 'Hadamard',
@@ -342,7 +340,6 @@ function generate_QASM (collection) {
 
   // puts references to functions into functions block, with names as the keys
   let functions = preprocess_functions(blocks)
-  console.log(variables)
 
   // first value is the qubits in q, the qubits being operated on
   // second value is the qubits in anc, an ancilla qreg
@@ -398,8 +395,6 @@ function process_blocks (
       case block_types.var_assignment: {
         // does the variable assignment described in the block
         variable_assignment(blocks[i], variables)
-        // console.log("Variables after this var assignment are");
-        // console.log(variables);
         break
       }
       case block_types.measurement: {
@@ -434,9 +429,6 @@ function process_blocks (
       }
       case block_types.custom_function_ref: {
         let block = functions[blocks[i].block_name]
-        console.log('functions')
-        console.log(functions)
-
         qasm.push(
           ...custom_function_to_qasm(block, variables, num_qubits, functions)
         )
@@ -571,8 +563,6 @@ function preprocess_functions (blocks) {
     }
   }
 
-  console.log('preprocessed_functions')
-  console.log(functions)
   return functions
 }
 
@@ -590,27 +580,16 @@ function expand_built_in_variables (block, variables) {
 
   if ('qubit_operands' in expanded_block) {
     expand_array_vars(expanded_block.qubit_operands, variables, 'integer')
-  } // else
-  // {
-  //     console.log("error, block is missing attributes");
-  // }
+  }
 
   if ('parameters' in expanded_block) {
     expand_array_vars(expanded_block.parameters, variables, 'angle')
-  } // else
-  // {
-  //     console.log("error, block is missing attributes");
-  // }
+  }
 
   return expanded_block
 }
 
 function variable_assignment (block, variables) {
-  console.log('block.lhs')
-  console.log(block.lhs)
-  console.log(block)
-  console.log('variables')
-  console.log(variables)
 
   let expanded_block = {}
   copy_block(expanded_block, block)
@@ -619,22 +598,15 @@ function variable_assignment (block, variables) {
   let variable = variables[expanded_block.lhs.block_name]
 
   if (expanded_block.rhs.block_type == block_types.expression) {
-    // console.log("expanded_block.rhs.block_type is expression");
-    // console.log(expanded_block);
+
     expanded_block.rhs = evaluate_expression_block(
       expanded_block.rhs,
       variables,
       expanded_block.lhs.var_type
     )
-  } else {
-    // console.log("expanded_block.rhs.block_type is not expression, it is ");
-    // console.log(expanded_block.rhs.block_type);
-    // console.log("expanded block");
-    // console.log(expanded_block)
   }
 
   variable.value = expanded_block.rhs
-  console.log(variables)
 }
 
 function is_valid_param (parameter) {
@@ -665,7 +637,6 @@ function expand_array_vars (values_array, variables, var_type) {
 
     if (value.block_type == block_types.variable_ref) {
       // search for variable with the name found in the variable reference
-      console.log(value.block_name)
       let variable = variables[value.block_name]
 
       // expands the list in-place, then decrements i and restarts the loop at the same index
@@ -677,10 +648,7 @@ function expand_array_vars (values_array, variables, var_type) {
 
       if (variable.value != undefined) {
         values_array[i] = variable.value
-      } // else
-      // {
-      //     console.log("something went wrong with expanding variables");
-      // }
+      }
     }
   }
 }
@@ -693,10 +661,7 @@ function expand_measurement_variables (block, variables) {
 
   if ('qubit_operands' in expanded_block) {
     expand_array_vars(expanded_block.qubit_operands, variables, 'integer')
-  } // else
-  // {
-  //     console.log("block has missing properties");
-  // }
+  }
 
   return expanded_block
 }
@@ -721,10 +686,7 @@ function expand_if_variables (block, variables) {
 
   if ('values' in expanded_block) {
     expand_array_vars(expanded_block.values, variables, 'integer')
-  } // else
-  // {
-  //     console.log("\"if\" block has missing properties");
-  // }
+  }
 
   return expanded_block
 }
@@ -791,10 +753,6 @@ function evaluate_expression_block (block, variables, type) {
         errors.push([error_types.unsupported_operator, block])
       }
     }
-  } else {
-    // console.log("something went wrong with evaluating expressions");
-    // console.log("block is");
-    // console.log(block);
   }
 }
 
@@ -861,8 +819,6 @@ function custom_function_to_qasm (block, variables, num_qubits, functions) {
   process_blocks(gate_qasm, block.blocks, variables, num_qubits, functions)
 
   //push id to the end of each block
-  console.log('gate_qasm')
-  console.log(gate_qasm)
   for (let qasm of gate_qasm) {
     qasm.push(block.block_id)
   }

@@ -13,8 +13,6 @@ export class QasmBlockly {
     this.generator.convertWorkspace(workspace);
     this.generator.convertBlock(block);
 
-    //console.log(Blockly.JavaScript.blockToCode(block));
-
     const ret = generate_QASM(this)
     let qasm_string = ret.qasm.reduce(
       (previous_string, current_string) => previous_string.concat(current_string[0])

@@ -26,35 +26,32 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
         toolbox: toolbox.current,
         ...rest,
         zoom:
-         {controls: true,
+        {
+          controls: true,
           wheel: true,
           startScale: 1.0,
           maxScale: 3,
           minScale: 0.3,
           scaleSpeed: 1.2,
-          pinch: true},
+          pinch: true
+        },
       })
       workspaceInjected.current = true
 
       primaryWorkspace.current.addChangeListener(() => {
-        console.log('change occured!!!!')
-        console.log(props.setQASM)
-
         const qasm = generateCode().qasm
-
-        props.setQASM(qasm + '')
+        let qasmString = '';
+        qasm.forEach(line => qasmString += line)
+        props.setQASM(qasmString)
       })
 
-      /*
-
-      */
-
-      var blockName = 'entry' // Name of block to add
+      const blockName = 'entry' // Name of block to add
 
       const block = (newBlock.current =
         primaryWorkspace.current.newBlock(blockName))
       block.initSvg()
       block.render()
+
     }
   }, [primaryWorkspace, toolbox, blocklyDiv, props])
 
@@ -63,9 +60,7 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
   // populate the collection with nodes
   const generateCode = () => {
     const collection = new QasmBlockly()
-    console.log(collection.getBlocks())
     const compiled = collection.compile(primaryWorkspace.current, newBlock.current);
-    console.log(compiled)
 
     return compiled
   }

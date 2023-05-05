@@ -97,6 +97,7 @@ export class QASMBlocklyGenerator {
     this.qasmGenerator['measurement_gate_true'] = this.measurement_gate_true.bind(this)
     this.qasmGenerator['if_block'] = this.if_block.bind(this)
     this.qasmGenerator['loop_block'] = this.loop_block.bind(this)
+    this.qasmGenerator['while_loop_block'] = this.while_loop_block.bind(this)
     this.qasmGenerator['custom_function_def'] = this.custom_function_def.bind(this)
     this.qasmGenerator['custom_function_ref'] = this.custom_function_ref.bind(this)
     this.qasmGenerator['n_bit_toffoli_to_qasm'] = this.n_bit_toffoli_to_qasm.bind(this)
@@ -122,14 +123,7 @@ export class QASMBlocklyGenerator {
     this.qasmGenerator.blockToCode(block)
   } 
 
-  /*test_input (block: Blockly.Block) {
-    const code = block.getFieldValue('DROP')
-    console.log(code)
-    return 'test'
-  }*/
-
   entry(block: Blockly.Block){
-    console.log(block);
     var code = 'lol';
     // TODO: Change ORDER_NONE to the correct strength.
     return code;
@@ -227,8 +221,6 @@ export class QASMBlocklyGenerator {
       [parseInt(value_qubit)]
     )
     this.blocks.push(gate)
-    // console.log(blocks)
-    // console.log(generate_QASM(blocks, value_qubit))
     return 'H'
   }
 
@@ -760,6 +752,22 @@ export class QASMBlocklyGenerator {
 
     var gate = new loop_block('', Math.random, parseInt(value_num), loop_body)
     this.blocks.push(gate)
+    return 'LOOP'
+  }
+
+  while_loop_block (block: any) {
+    console.log('hello');
+    //var value_num = this.qasmGenerator.valueToCode(block, 'NUM', ORDER.ATOMIC)
+
+    // this is the position of blocks that should be added into the loop instead of the blocks array
+    //let loop_start = this.blocks.length
+    //this.qasmGenerator.statementToCode(block, 'Blocks')
+    // saves the blocks to loop body, then removes the blocks from the end of the blocks array by changing the length
+    //let loop_body = this.blocks.slice(loop_start)
+    //this.blocks.length = loop_start
+
+    //var gate = new loop_block('', Math.random, parseInt(value_num), loop_body)
+    //this.blocks.push(gate)
     return 'LOOP'
   }
 

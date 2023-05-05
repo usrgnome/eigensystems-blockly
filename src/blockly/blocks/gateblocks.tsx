@@ -2,6 +2,8 @@ import Blockly from 'blockly';
 
 export const titles : string[] = [];
 
+Blockly.Msg.GATE_HUE = '#4a148c';
+
 const addBlock = (name: string, json: object) => {
   titles.push(name)
   Blockly.Blocks[name] = {
@@ -63,21 +65,7 @@ addBlock('test_input' ,  {
     }
   ],
   "output": "Number",
-  "colour": 60,
-  "tooltip": "",
-  "helpUrl": ""
-});
-
-// program entry block
-addBlock('entry' , {
-  "type": "entry",
-  "message0": "Program entry",
-  "args0": [
-  ],
-  "inputsInline": true,
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": 230,
+  "colour": 0,
   "tooltip": "",
   "helpUrl": ""
 });
@@ -98,7 +86,7 @@ addBlock('test_x_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -119,7 +107,7 @@ addBlock('test_y_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -140,7 +128,7 @@ addBlock('test_z_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -161,7 +149,7 @@ addBlock('test_hadamard_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -194,7 +182,7 @@ addBlock('u3_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -223,7 +211,7 @@ addBlock('u2_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -248,7 +236,7 @@ addBlock('u1_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -273,7 +261,7 @@ addBlock('cx_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -294,7 +282,7 @@ addBlock('id_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -315,7 +303,7 @@ addBlock('s_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -335,7 +323,7 @@ addBlock('sdg_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -355,7 +343,7 @@ addBlock('t_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -375,7 +363,7 @@ addBlock('tdg_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -400,7 +388,7 @@ addBlock('rx_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -425,7 +413,7 @@ addBlock('ry_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -450,7 +438,7 @@ addBlock('rz_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -474,7 +462,7 @@ addBlock('cz_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -498,7 +486,7 @@ addBlock('cy_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -522,7 +510,7 @@ addBlock('ch_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -551,7 +539,7 @@ addBlock('crz_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -580,7 +568,7 @@ addBlock('cu1_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -617,7 +605,7 @@ addBlock('cu3_gate' , {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });
@@ -645,7 +633,7 @@ addBlock('ccx_gate' ,  {
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "colour": '%{BKY_GATE_HUE}',
   "tooltip": "",
   "helpUrl": ""
 });

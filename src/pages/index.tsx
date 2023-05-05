@@ -1,18 +1,11 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
-import BlocklyComponent, { Block, Category } from '../blockly/components'
 import '../blockly/blocks'
-import { titles as gateBlocksTitles } from '../blockly/blocks/gateblocks'
-import { titles as otherBlocksTitles } from '../blockly/blocks/otherblocks'
-import { titles as variableBlocksTitles } from '../blockly/blocks/variableblocks'
-import ProbabilitiesGraph from '../components/Graph'
-import QasmText from '../components/QasmOutput'
 import AppContainer from './app'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCode,
-  faICursor,
   faMousePointer,
   faPlay
 } from '@fortawesome/free-solid-svg-icons'

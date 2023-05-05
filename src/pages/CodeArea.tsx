@@ -1,6 +1,6 @@
-import Editor, { Monaco } from '@monaco-editor/react'
+import Editor from '@monaco-editor/react'
 import styles from '@/styles/Home.module.css'
-import React, { useState } from 'react'
+import React from 'react'
 
 export default function CodeArea ({
   code,
@@ -11,11 +11,6 @@ export default function CodeArea ({
   code: string
   showCircuit: () => any
 }) {
-  const [codetxt, setCode] = useState('')
-  const [txt, setTxt] = useState('')
-
-  console.log(codetxt, code, 'WTF!!!!1')
-
   return (
     <div className={styles.outputDiv} style={{display: visible ? "block" : "none"}}>
       <Editor
@@ -26,7 +21,7 @@ export default function CodeArea ({
         value={code}
         options={{readOnly: true}}
         onMount={a => {
-          //console.log('wtf', a);
+
         }}
       />
       <button
