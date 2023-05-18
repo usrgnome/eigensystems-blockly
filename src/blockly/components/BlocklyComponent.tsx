@@ -3,6 +3,7 @@ import styles from '@/styles/BlocklyComponent.module.css'
 import Blockly from 'blockly'
 import { PropsWithChildren } from 'react'
 import { QasmBlockly } from '@/generator/generatorCollection'
+import { qasmGenerator } from '@/generator/generator'
 
 type BlocklyComponentProps = {
   trashcan: boolean
@@ -39,9 +40,7 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
       workspaceInjected.current = true
 
       primaryWorkspace.current.addChangeListener(() => {
-        const qasm = generateCode().qasm
-        let qasmString = '';
-        qasm.forEach(line => qasmString += line)
+        const qasmString = generateCode().output
         props.setQASM(qasmString)
       })
 
@@ -59,10 +58,9 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
 
   // populate the collection with nodes
   const generateCode = () => {
-    const collection = new QasmBlockly()
-    const compiled = collection.compile(primaryWorkspace.current, newBlock.current);
-
-    return compiled
+    const workspace = primaryWorkspace.current;
+    if(!workspace) throw 'No workspace found!';
+    return new qasmGenerator().compile(workspace);
   }
 
   return (
