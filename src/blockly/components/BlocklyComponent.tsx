@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react'
 import styles from '@/styles/BlocklyComponent.module.css'
 import Blockly from 'blockly'
 import { PropsWithChildren } from 'react'
-import { QasmBlockly } from '@/generator/generatorCollection'
 import { qasmGenerator } from '@/generator/generator'
 
 type BlocklyComponentProps = {
