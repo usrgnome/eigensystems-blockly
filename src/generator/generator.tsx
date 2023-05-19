@@ -265,7 +265,7 @@ class Scope {
       }
       case NodeType.XGATE: {
         const xg = node as XGateNode
-        return [`x[${this.getValueFromLiteralOrRef(xg.index)}]`]
+        return [`x q[${this.getValueFromLiteralOrRef(xg.index)}]`]
       }
       case NodeType.REPEAT: {
         let rep = node as RepeatNode
@@ -464,6 +464,10 @@ export class qasmGenerator {
       const refNode = new ReferenceNode(text_name)
       // this.currentScope.add(refNode)
       return ['REF:' + text_name, '', 1]
+    }.bind(this)
+
+    this.generator['if_else'] = function (block: any) {
+      return '';
     }.bind(this)
   }
 
