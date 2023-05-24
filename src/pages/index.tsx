@@ -3,15 +3,12 @@ import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
 import '../blockly/blocks'
 import AppContainer from './app'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faCode,
-  faMousePointer,
-  faPlay
-} from '@fortawesome/free-solid-svg-icons'
+import Navbar from '../components/NavBar'
+import { Difficulty } from '@/utils/utils';
 
 const Home = () => {
   const [mode, setMode] = useState('d&d')
+  const [difficulty, setDifficulty] = useState(Difficulty.EASY)
 
   return (
     <>
@@ -26,41 +23,8 @@ const Home = () => {
       </Head>
 
       <div className={styles.app}>
-        <div className={styles.navbar}>
-          <div
-            className={styles.navbarBtn}
-            onClick={() => {
-              setMode('d&d')
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faMousePointer}
-              className={styles.navbarBtnIcon}
-            ></FontAwesomeIcon>{' '}
-            Drag & Drop
-          </div>
-          <div
-            className={styles.navbarBtn}
-            onClick={() => {
-              setMode('inspect')
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faCode}
-              className={styles.navbarBtnIcon}
-            ></FontAwesomeIcon>
-            Inspect Code
-          </div>
-          <div className={styles.navbarBtn}>
-            <FontAwesomeIcon
-              icon={faPlay}
-              className={styles.navbarBtnIcon}
-            ></FontAwesomeIcon>
-            Run
-          </div>
-        </div>
-
-        <AppContainer mode={mode} />
+        <Navbar setMode={setMode} setDifficulty={setDifficulty} difficulty={difficulty}/>
+        <AppContainer mode={mode} difficulty={difficulty}/>
       </div>
     </>
   )

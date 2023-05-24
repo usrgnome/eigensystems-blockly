@@ -179,8 +179,6 @@
   background-color: #1b1c1d;
 }
 
-
-
 .navbarBtn {
   align-items: center;
   vertical-align: middle;
@@ -211,4 +209,31 @@
 
 .navbarBtn:hover {
   background-color: #3d3d3f;
+}
+
+.dropdown {
+  align-items: center;
+  vertical-align: middle;
+  font-family: inherit;
+  font-size: 1rem;
+  text-shadow: none;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-decoration: none !important;
+  font-weight: 400 !important;
+  cursor: pointer;
+  background: #1b1c1d;
+  color: #fff;
+  padding: 15px;
+  border: var(--cp-button-border-width) solid transparent;
+  text-align: center;
+  justify-content: center;
+  font-family: Lato, Helvetica Neue, Arial, Helvetica, sans-serif;
+  display: flex;
+  margin-left: auto;
+}
+
+.dropdownText {
+  padding: 15px;
 }

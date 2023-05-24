@@ -142,28 +142,6 @@ addBlock('loop_block', { //https://blockly-demo.appspot.com/static/demos/blockfa
   "helpUrl": ""
 });
 
-addBlock('while_loop_block', { //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#y6nage
-  "type": "while_loop_block",
-  "message0": "repeat while %1 %2",
-  "args0": [
-    {
-      "type": "input_value",
-      "name": "NUM",
-      "check": "Boolean"
-    },
-    {
-      "type": "input_statement",
-      "name": "Blocks"
-    }
-  ],
-  "inputsInline": false,
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": '%{BKY_OTHER_HUE}',
-  "tooltip": "",
-  "helpUrl": ""
-});
-
 addBlock('custom_function_def', { //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#rwdh63x
   "type": "custom_function_def",
   "message0": "Function %1 %2 %3",
@@ -179,34 +157,6 @@ addBlock('custom_function_def', { //https://blockly-demo.appspot.com/static/demo
     {
       "type": "input_statement",
       "name": "Blocks"
-    }
-  ],
-  "inputsInline": true,
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": '%{BKY_OTHER_HUE}',
-  "tooltip": "",
-  "helpUrl": ""
-});
-
-addBlock('n_bit_toffoli_to_qasm', { //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#decbyb
-  "type": "n_bit_toffoli_to_qasm",
-  "message0": "N Bit Toffoli To Qasm - %1 Controls %2 AntiControls %3 Target %4",
-  "args0": [
-    {
-      "type": "input_dummy"
-    },
-    {
-      "type": "input_value",
-      "name": "CONTROL_QUIBIT"
-    },
-    {
-      "type": "input_value",
-      "name": "ANTICONTROL_QUBIT"
-    },
-    {
-      "type": "input_value",
-      "name": "TARGET_QUBIT"
     }
   ],
   "inputsInline": true,

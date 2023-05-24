@@ -11,40 +11,6 @@ const addBlock = (name: string, json: object) => {
     };
 }
 
-addBlock('comparison_block', {
-    "type": "comparison_block",
-    "message0": "%1 %2 %3",
-    "args0": [
-        {
-            "type": "input_value",
-            "name": "A",
-            "check": "Number"
-        },
-        {
-            "type": "field_dropdown",
-            "name": "OPERATOR",
-            "options": [
-                ["=", "EQ"],
-                ["\u2260", "NEQ"],
-                ["<", "LT"],
-                ["\u2264", "LTE"],
-                [">", "GT"],
-                ["\u2265", "GTE"]
-            ]
-        },
-        {
-            "type": "input_value",
-            "name": "B",
-            "check": "Number"
-        }
-    ],
-    "inputsInline": true,
-    "output": "Boolean",
-    "colour": 210,
-    "tooltip": "Comparison block",
-    "helpUrl": ""
-})
-
 //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#thggpb
 addBlock('var_def_gate', {
     "type": "var_gate",
