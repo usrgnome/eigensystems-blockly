@@ -17,8 +17,8 @@ type NavbarComponentProps = {
 }
 
 const difficultyOptions = [
-            { value: Difficulty.EASY, label: 'Easy' },
-            { value: Difficulty.HARD, label: 'Hard' }
+    { value: Difficulty.EASY, label: 'Easy' },
+    { value: Difficulty.HARD, label: 'Hard' }
 ];
 
 const Navbar = ({ setMode, setDifficulty, difficulty }: NavbarComponentProps) => {
