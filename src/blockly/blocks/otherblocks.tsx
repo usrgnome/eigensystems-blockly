@@ -74,9 +74,41 @@ addBlock('measurement_gate', { //https://blockly-demo.appspot.com/static/demos/b
   "helpUrl": ""
 });
 
+addBlock('logic_compare', {
+  'type': 'logic_compare',
+  'message0': '%1 %2 %3',
+  'args0': [
+    {
+      'type': 'input_value',
+      'name': 'A',
+    },
+    {
+      'type': 'field_dropdown',
+      'name': 'OP',
+      'options': [
+        ['=', 'EQ'],
+        ['\u2260', 'NEQ'],
+        ['\u200F<', 'LT'],
+        ['\u200F\u2264', 'LTE'],
+        ['\u200F>', 'GT'],
+        ['\u200F\u2265', 'GTE'],
+      ],
+    },
+    {
+      'type': 'input_value',
+      'name': 'B',
+    },
+  ],
+  'inputsInline': true,
+  'output': 'Boolean',
+  'style': 'logic_blocks',
+  'helpUrl': '%{BKY_LOGIC_COMPARE_HELPURL}',
+  'extensions': ['logic_compare', 'logic_op_tooltip'],
+})
+
 addBlock('if_block', { //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#9xq2zw
   "type": "if_block",
-  "message0": "If Block %1 %2 Values %3 Gate %4",
+  "message0": "IF %1 %2 %3 THEN %4",
   "args0": [
     {
       "type": "field_input",
@@ -101,6 +133,32 @@ addBlock('if_block', { //https://blockly-demo.appspot.com/static/demos/blockfact
   "colour": '%{BKY_OTHER_HUE}',
   "tooltip": "",
   "helpUrl": ""
+});
+
+addBlock('if_else',  {
+  'type': 'controls_ifelse',
+  'message0': '%{BKY_CONTROLS_IF_MSG_IF} %1',
+  'args0': [
+    {
+      'type': 'input_value',
+      'name': 'IF0',
+      'check': 'Boolean',
+    },
+  ],
+  'message1': '%{BKY_CONTROLS_IF_MSG_THEN} %1',
+  'args1': [
+    {
+      'type': 'input_statement',
+      'name': 'DO0',
+    },
+  ],
+  'previousStatement': null,
+  'nextStatement': null,
+  'style': 'logic_blocks',
+  'tooltip': '%{BKYCONTROLS_IF_TOOLTIP_2}',
+  'helpUrl': '%{BKY_CONTROLS_IF_HELPURL}',
+  'suppressPrefixSuffix': true,
+  'extensions': ['controls_if_tooltip'],
 });
 
 addBlock('custom_function_ref', { //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#byprkm
