@@ -26,7 +26,7 @@ export default function AppContainer({ mode }: { mode: string }) {
   }
 
   const circuit = new QuantumCircuit(3)
-  circuit.importQASM(qasmBox, (err: string[]) => {
+  circuit.importQASM("", (err: string[]) => {
     if (err && err.length > 0) return console.log('error', qasmBox, err)
   })
 

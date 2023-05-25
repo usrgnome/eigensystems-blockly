@@ -23,59 +23,31 @@ addBlock('test_input', {
       value: 0
     }
   ],
-  /*"args0": [
-    {
-      "type": "field_dropdown",
-      "name": "DROP",
-      "options": [
-        [
-          "0",
-          "0"
-        ],
-        [
-          "1",
-          "1"
-        ],
-        [
-          "2",
-          "2"
-        ],
-        [
-          "3",
-          "3"
-        ],
-        [
-          "4",
-          "4"
-        ],
-        [
-          "5",
-          "5"
-        ],
-        [
-          "6",
-          "6"
-        ],
-        [
-          "7",
-          "7"
-        ],
-        [
-          "8",
-          "8"
-        ],
-        [
-          "9",
-          "9"
-        ]
-      ]
-    }
-  ],*/
   output: 'Number',
   colour: 0,
   tooltip: '',
   helpUrl: ''
 })
+
+addBlock('register', {
+    'type': 'register',
+    'message0': '%1',
+    'args0': [
+      {
+        'type': 'field_dropdown',
+        'name': 'register',
+        'options': [
+          ['q', 'q'],
+          ['c', 'c'],
+        ],
+      },
+    ],
+    'output': 'String',
+    'style': 'logic_blocks',
+    'tooltip': 'access a registers',
+    'helpUrl': '%{BKY_LOGIC_BOOLEAN_HELPURL}',
+  },
+)
 
 //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#v8faew
 addBlock('test_x_gate', {
