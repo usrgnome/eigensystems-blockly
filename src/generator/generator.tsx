@@ -56,11 +56,6 @@ enum NodeType {
   COMPARISON
 }
 
-enum BitType {
-  CLASSICAL = 'classical',
-  QUBIT = 'Qubit'
-}
-
 class QNode {
   type: NodeType = NodeType.NODE
 
@@ -310,7 +305,7 @@ class Scope {
         const xg = node as XGateNode
         const idx = this.getValueFromLiteralOrRef(xg.index)
         infoObj.qIdx = Math.max(infoObj.qIdx, idx)
-        return [BitType.QUBIT, `x q[${idx}];`]
+        return [`x q[${idx}];`]
       }
       case NodeType.REPEAT: {
         let rep = node as RepeatNode
@@ -375,8 +370,6 @@ class Scope {
 
   compile (infoObj: InfoObj) {
     let str: string[] = []
-    let qubitCount = 0;
-    let regBitCount = 0;
 
     // need to hoist function def's and var defs to the top to match the following scheme
 
@@ -424,14 +417,6 @@ class Scope {
       let node = this.topLevel.nodes[i]
 
       let ret = this.compileNode(node, infoObj)
-      if (ret.length === 2) {
-        if (ret[0] === BitType.QUBIT){
-          qubitCount++;
-        } else if (ret[0] === BitType.CLASSICAL) {
-          regBitCount++;
-        }
-        ret.shift();
-      }
       if (ret.length > 0) str.push(...ret)
     }
 
@@ -445,9 +430,7 @@ class Scope {
         str[i] = space + str[i]
       }
     }
-    const header = [`OPENQASM 2.0;\ninclude "qelib1.inc";\n\nqreg q[${qubitCount}];\ncreg c[${regBitCount}];\n`];
-    const arr = header.concat(str);
-    return arr;
+    return str
   }
 }
 
