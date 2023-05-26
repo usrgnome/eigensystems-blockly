@@ -50,7 +50,10 @@ enum NodeType {
   PRINT = 7,
   FUNCREF = 8,
   FUNCDEF = 9,
-  XGATE = 10
+  XGATE = 10,
+  REG,
+  IF,
+  COMPARISON
 }
 
 enum BitType {
@@ -63,6 +66,34 @@ class QNode {
 
   constructor (type: NodeType) {
     this.type = type
+  }
+}
+
+class ComparisonNode extends QNode {
+  condA: QNode = new QNode(NodeType.NODE)
+  condB: QNode = new QNode(NodeType.NODE)
+  check: string = '=='
+
+  constructor () {
+    super(NodeType.COMPARISON)
+  }
+}
+
+class IfNode extends QNode {
+  comparison: ComparisonNode
+  body: QNode
+  constructor (comparison: ComparisonNode, body: QNode) {
+    super(NodeType.IF)
+    this.comparison = comparison
+    this.body = body
+  }
+}
+
+class RegisterNode extends QNode {
+  regName: string
+  constructor (regName: string) {
+    super(NodeType.REG)
+    this.regName = regName
   }
 }
 
@@ -226,9 +257,13 @@ class Scope {
   }
 
   private getValueFromLiteralOrRef (node: LiteralNode): number {
+    if(!node) return 0;
     if (node.type === NodeType.LITERAL) {
       return node.getValue()
     } else {
+      if(node.type !== NodeType.REFERENCE) {
+        return 0;
+      }
       const ref = node as ReferenceNode
       let current: Scope | null = this
       let found = false
@@ -249,7 +284,7 @@ class Scope {
     }
   }
 
-  private compileNode (node: QNode): string[] {
+  private compileNode (node: QNode, infoObj: InfoObj): string[] {
     switch (node.type) {
       case NodeType.DEFINE: {
         let def = node as DefineNode
@@ -257,7 +292,10 @@ class Scope {
           def.getValue()
         )
         return [
-          `# DEFINE ${def.getName()} AS ${this.compileNode(def.getValue())}`
+          `# DEFINE ${def.getName()} AS ${this.compileNode(
+            def.getValue(),
+            infoObj
+          )}`
         ]
       }
       case NodeType.FUNCDEF: {
@@ -270,7 +308,9 @@ class Scope {
       }
       case NodeType.XGATE: {
         const xg = node as XGateNode
-        return [BitType.QUBIT, `x q[${this.getValueFromLiteralOrRef(xg.index)}]`]
+        const idx = this.getValueFromLiteralOrRef(xg.index)
+        infoObj.qIdx = Math.max(infoObj.qIdx, idx)
+        return [BitType.QUBIT, `x q[${idx}];`]
       }
       case NodeType.REPEAT: {
         let rep = node as RepeatNode
@@ -281,7 +321,7 @@ class Scope {
         let body: string[] = [`# LOOP {...} ${loopTimes} TIMES`]
 
         for (let i = 0; i < loopTimes; i++) {
-          body.push(...childScope.compile())
+          body.push(...childScope.compile(infoObj))
         }
         return body
       }
@@ -289,7 +329,7 @@ class Scope {
       case NodeType.FUNCREF: {
         let fn = node as FuncRefNode
         let fnScope = this.getFunc(fn.getName())
-        return [`# CALL ${fn.getName()}`, ...fnScope.compile()]
+        return [`# CALL ${fn.getName()}`, ...fnScope.compile(infoObj)]
       }
       case NodeType.INC: {
         let inc = node as IncrementNode
@@ -302,6 +342,26 @@ class Scope {
       case NodeType.REFERENCE: {
         break
       }
+      case NodeType.IF: {
+        let ifN = node as IfNode
+        if (ifN.body && ifN.comparison) {
+          console.log(ifN);
+          const comparison = this.compileNode(ifN.comparison, infoObj)
+          const body = this.compileNode(ifN.body, infoObj)
+          return [`if(${comparison}) ${body}`]
+        }
+        return ['']
+      }
+      case NodeType.COMPARISON: {
+        const c = node as ComparisonNode;
+        const a = this.compileNode(c.condA, infoObj);
+        const b = this.compileNode(c.condB, infoObj);
+        return [`${a} ${c.check} ${b}`];
+      }
+      case NodeType.REG: {
+        const r = node as RegisterNode;
+        return [r.regName]; 
+      }
       case NodeType.PRINT: {
         const prt = node as PrintNode
         return [`PRINT ${this.getValueFromLiteralOrRef(prt.arg)}`]
@@ -313,8 +373,7 @@ class Scope {
     return []
   }
 
-  compile () {
-
+  compile (infoObj: InfoObj) {
     let str: string[] = []
     let qubitCount = 0;
     let regBitCount = 0;
@@ -364,7 +423,7 @@ class Scope {
     for (let i = 0; i < this.topLevel.nodes.length; i++) {
       let node = this.topLevel.nodes[i]
 
-      let ret = this.compileNode(node)
+      let ret = this.compileNode(node, infoObj)
       if (ret.length === 2) {
         if (ret[0] === BitType.QUBIT){
           qubitCount++;
@@ -392,29 +451,46 @@ class Scope {
   }
 }
 
+interface InfoObj {
+  qIdx: number
+  cIdx: number
+}
+
 class Compiler {
   compile (scope: ScopeNode) {
+    const infoObj: InfoObj = { qIdx: 0, cIdx: 0 }
     const topScope = new Scope(scope)
-    return topScope.compile().join('\n')
+    const compileInfo = topScope.compile(infoObj)
+    const headerInfo = [
+      'OPENQASM 2.0;',
+      'include "qelib1.inc";',
+      `qreg q[${infoObj.qIdx}];`,
+      `creg c[${infoObj.cIdx}];`
+    ]
+    const ret = [...headerInfo, ...compileInfo].join('\n')
+    console.log(ret)
+    return ret
   }
 }
-
-/*export const qasmGenerator = new Blockly.Generator('JSON');
-
-qasmGenerator['entry'] = function(){
-  return '';
-}
-
-qasmGenerator['test_x_gate'] = function(){
-  return 'k';
-}*/
-
-enum StateMachineStates {}
 
 export class qasmGenerator {
   generator = javascriptGenerator
   currentScope: ScopeNode = new ScopeNode()
   lastNode: QNode | null = null
+  stack: QNode[] = []
+
+  saveStack(){
+    const stack = this.stack;
+    this.stack = [];
+    return stack;
+  }
+
+  restoreStack(stack: QNode[]) {
+    this.stack = stack;
+    for(let i = 0; i < stack.length; i++) {
+      this.currentScope.add(stack[i]);
+    }
+  }
 
   constructor () {
     const that = this
@@ -424,25 +500,26 @@ export class qasmGenerator {
     }.bind(that)
 
     this.generator['test_x_gate'] = function (block: Blockly.Block) {
-      var value_qubit = that.generator.valueToCode(block, 'Qubit', ORDER.ATOMIC)
-
-      if (/REF:/.test(value_qubit)) {
-        const refName = value_qubit.split(':')[1]
-        that.currentScope.add(new XGateNode(new ReferenceNode(refName)))
-        return 'X'
-      }
-
-      that.currentScope.add(
-        new XGateNode(new LiteralNode(parseInt(value_qubit)))
-      )
+      const oldStack = that.saveStack();
+      that.generator.valueToCode(block, 'Qubit', ORDER.ATOMIC)
+      const node = new XGateNode(that.stack.pop() as LiteralNode);
+      that.restoreStack(oldStack);
+      that.stack.push(node);
       return 'X'
     }
 
     this.generator['test_input'] = function (block: Blockly.Block) {
       var dropdown_drop = block.getFieldValue('DROP')
-      // TODO: Assemble JavaScript into code variable.
       var code = dropdown_drop
-      // TODO: Change ORDER_NONE to the correct strength.
+      const node = new LiteralNode(parseInt(code) || 0)
+      that.stack.push(node)
+      return [code, ORDER.ATOMIC]
+    }
+
+    this.generator['register'] = function (block: Blockly.Block) {
+      const code = block.getFieldValue('register') === 'q' ? 'q' : 'c'
+      const node = new RegisterNode(code)
+      that.stack.push(node)
       return [code, ORDER.ATOMIC]
     }
 
@@ -457,6 +534,7 @@ export class qasmGenerator {
       that.generator.statementToCode(block, 'Blocks')
 
       that.currentScope = oldScope
+      that.stack.push(fnDef)
       return 'FUNDEF'
     }
 
@@ -464,6 +542,7 @@ export class qasmGenerator {
       var text_name = block.getFieldValue('NAME')
       const funRef = new FuncRefNode(text_name)
       that.currentScope.add(funRef)
+      that.stack.push(funRef)
       return 'FUNREF'
     }
 
@@ -473,35 +552,112 @@ export class qasmGenerator {
       var dropdown_type = block.getFieldValue('TYPE')
       const varDefGate = new DefineNode(text_name, new LiteralNode(text_input))
       that.currentScope.add(varDefGate)
+      that.stack.push(varDefGate)
       return 'VAR'
     }
 
     this.generator['var_ref_gate'] = function (block: any) {
       var text_name = block.getFieldValue('NAME')
       const refNode = new ReferenceNode(text_name)
-      // this.currentScope.add(refNode)
-      return ['REF:' + text_name, '', 1]
+      that.stack.push(refNode)
+      return ['REF', '', 1]
     }.bind(this)
 
     this.generator['if_else'] = function (block: any) {
-      return '';
+      // If/elseif/else condition.
+      let n = 0
+      let code = ''
+      const oldStack = that.saveStack();
+
+      const conditionCode =
+        that.generator.valueToCode(block, 'IF' + n, ORDER.NONE) || 'false'
+
+      const comparison = that.stack.pop() as ComparisonNode
+
+      let branchCode = that.generator.statementToCode(block, 'DO' + n)
+      if (that.generator.STATEMENT_SUFFIX) {
+        branchCode =
+          that.generator.prefixLines(
+            that.generator.injectId(that.generator.STATEMENT_SUFFIX, block),
+            that.generator.INDENT
+          ) + branchCode
+      }
+
+      console.log(that.stack, 'do IF BLOCK');
+      const bodyNode = that.stack.pop() as QNode
+
+      code +=
+        (n > 0 ? ' else ' : '') +
+        'if (' +
+        conditionCode +
+        ') {\n' +
+        branchCode +
+        '}'
+      n++
+
+      const ifNode = new IfNode(comparison, bodyNode)
+
+      that.restoreStack(oldStack);
+
+      that.stack.push(ifNode)
+      that.currentScope.add(ifNode)
+      console.log(code)
+
+      return code + '\n'
     }.bind(this)
+
+    this.generator['logic_compare'] = function (block: Blockly.Block) {
+      // Comparison operator.
+      const OPERATORS = {
+        EQ: '==',
+        NEQ: '!=',
+        LT: '<',
+        LTE: '<=',
+        GT: '>',
+        GTE: '>='
+      }
+      // @ts-ignore
+      const operator = OPERATORS[block.getFieldValue('OP')]
+      const order =
+        operator === '==' || operator === '!='
+          ? that.generator.ORDER_EQUALITY
+          : that.generator.ORDER_RELATIONAL
+      const argument0 = that.generator.valueToCode(block, 'A', order) || '0'
+      const argument1 = that.generator.valueToCode(block, 'B', order) || '0'
+      const code = argument0 + ' ' + operator + ' ' + argument1
+
+      const node = new ComparisonNode()
+      const $a = that.stack.pop() as QNode
+      const $b = that.stack.pop() as QNode
+      node.condA = $b
+      node.condB = $a
+      node.check = operator
+      that.stack.push(node)
+
+      return [code, order]
+    }
   }
 
   compile (workspace: Blockly.Workspace) {
+    this.stack.length = 0
     this.lastNode = null
     this.currentScope = new ScopeNode()
     this.generator.workspaceToCode(workspace)
+    console.log(this.currentScope)
 
     const compiler = new Compiler()
     let output = ''
     let error: string | null = null
 
-    try {
-      output = compiler.compile(this.currentScope)
+    output = compiler.compile(this.currentScope)
+    this.restoreStack(this.stack);
+    
+   /* try {
     } catch (err) {
       error = err + ''
-    }
+    }*/
+
+    if (error) throw new Error(error)
 
     const ret = { output, error }
     return ret
