@@ -1,4 +1,3 @@
-
 import Blockly from 'blockly';
 import { Difficulty } from '@/utils/utils';
 
@@ -101,8 +100,8 @@ addBlock(Difficulty.EASY, 'test_x_gate', {
   "previousStatement": null,
   "nextStatement": null,
   "colour": '%{BKY_GATE_HUE}',
-  "tooltip": "",
-  "helpUrl": ""
+  "tooltip": "The Pauli-X gate is a single-qubit rotation through π radians around the x-axis.",
+  "helpUrl": "https://www.quantum-inspire.com/kbase/pauli-x/"
 });
 
 //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#jqk6wx
@@ -122,8 +121,8 @@ addBlock(Difficulty.EASY, 'test_y_gate', {
   "previousStatement": null,
   "nextStatement": null,
   "colour": '%{BKY_GATE_HUE}',
-  "tooltip": "",
-  "helpUrl": ""
+  "tooltip": "The Pauli-Y gate is a single-qubit rotation through π radians around the y-axis.",
+  "helpUrl": "https://www.quantum-inspire.com/kbase/pauli-y/"
 });
 
 //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#midzok
@@ -143,8 +142,8 @@ addBlock(Difficulty.EASY, 'test_z_gate', {
   "previousStatement": null,
   "nextStatement": null,
   "colour": '%{BKY_GATE_HUE}',
-  "tooltip": "",
-  "helpUrl": ""
+  "tooltip": "The Pauli-Z gate is a single-qubit rotation through π radians around the z-axis.",
+  "helpUrl": "https://www.quantum-inspire.com/kbase/pauli-z/"
 });
 
 //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#gzgqty
@@ -164,8 +163,8 @@ addBlock(Difficulty.EASY, 'test_hadamard_gate', {
   "previousStatement": null,
   "nextStatement": null,
   "colour": '%{BKY_GATE_HUE}',
-  "tooltip": "",
-  "helpUrl": ""
+  "tooltip": "The Hadamard gate is a single-qubit operation that maps the basis state ∣0⟩ to (∣0⟩ + ∣1⟩) / \u221A2 and ∣1⟩ to (∣0⟩ - ∣1⟩) / \u221A2, thus creating an equal superposition of the two basis states.",
+  "helpUrl": "https://www.quantum-inspire.com/kbase/hadamard/"
 });
 
 //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#eynyor
@@ -318,8 +317,8 @@ addBlock(Difficulty.EASY, 's_gate', {
   "previousStatement": null,
   "nextStatement": null,
   "colour": '%{BKY_GATE_HUE}',
-  "tooltip": "",
-  "helpUrl": ""
+  "tooltip": "The Phase gate (or S gate) is a single-qubit operation defined by: S = [1, 0], [0, i]",
+  "helpUrl": "https://www.quantum-inspire.com/kbase/s-gate/"
 });
 
 addBlock(Difficulty.HARD, 'sdg_gate', {

@@ -53,6 +53,11 @@ enum NodeType {
   XGATE = 10
 }
 
+enum BitType {
+  CLASSICAL = 'classical',
+  QUBIT = 'Qubit'
+}
+
 class QNode {
   type: NodeType = NodeType.NODE
 
@@ -265,7 +270,7 @@ class Scope {
       }
       case NodeType.XGATE: {
         const xg = node as XGateNode
-        return [`x q[${this.getValueFromLiteralOrRef(xg.index)}]`]
+        return [BitType.QUBIT, `x q[${this.getValueFromLiteralOrRef(xg.index)}]`]
       }
       case NodeType.REPEAT: {
         let rep = node as RepeatNode
@@ -311,6 +316,8 @@ class Scope {
   compile () {
 
     let str: string[] = []
+    let qubitCount = 0;
+    let regBitCount = 0;
 
     // need to hoist function def's and var defs to the top to match the following scheme
 
@@ -358,6 +365,14 @@ class Scope {
       let node = this.topLevel.nodes[i]
 
       let ret = this.compileNode(node)
+      if (ret.length === 2) {
+        if (ret[0] === BitType.QUBIT){
+          qubitCount++;
+        } else if (ret[0] === BitType.CLASSICAL) {
+          regBitCount++;
+        }
+        ret.shift();
+      }
       if (ret.length > 0) str.push(...ret)
     }
 
@@ -371,7 +386,9 @@ class Scope {
         str[i] = space + str[i]
       }
     }
-    return str
+    const header = [`OPENQASM 2.0;\ninclude "qelib1.inc";\n\nqreg q[${qubitCount}];\ncreg c[${regBitCount}];\n`];
+    const arr = header.concat(str);
+    return arr;
   }
 }
 
