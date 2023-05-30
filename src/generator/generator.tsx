@@ -53,7 +53,8 @@ enum NodeType {
   XGATE = 10,
   REG,
   IF,
-  COMPARISON
+  COMPARISON,
+  MEASURE
 }
 
 class QNode {
@@ -160,6 +161,21 @@ class ScopeNode extends QNode {
 
   add (node: QNode) {
     this.nodes.push(node)
+  }
+}
+
+class MeasureNode extends QNode {
+  r0: string;
+  i0: number;
+  r1: string;
+  i1: number;
+
+  constructor(r0: string, i0: number, r1: string, i1: number){
+    super(NodeType.MEASURE);
+    this.r0 = r0;
+    this.r1 = r1;
+    this.i0 = i0;
+    this.i1 = i1;
   }
 }
 
@@ -320,7 +336,11 @@ class Scope {
         }
         return body
       }
-
+      case NodeType.MEASURE: {
+        const measure = node as MeasureNode;
+        return [`measure ${measure.r0}[${measure.i0}] -> ${measure.r1}[${measure.i1}];`]
+        return [];
+      }
       case NodeType.FUNCREF: {
         let fn = node as FuncRefNode
         let fnScope = this.getFunc(fn.getName())
@@ -553,6 +573,16 @@ export class qasmGenerator {
       that.stack.push(refNode)
       return ['REF', '', 1]
     }.bind(this)
+
+    this.generator['measurement_gate_true'] = function(block: Blockly.Block) {
+
+      const r0 = block.getFieldValue('R0') as string;
+      const i0 = block.getFieldValue('I0') as number;
+      const r1 = block.getFieldValue('R1') as string;
+      const i1 = block.getFieldValue('I1') as number;
+      that.stack.push(new MeasureNode(r0, i0, r1, i1));
+      return ''
+    }
 
     this.generator['if_else'] = function (block: any) {
       // If/elseif/else condition.
