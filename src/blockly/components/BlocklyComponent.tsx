@@ -39,7 +39,6 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
       workspaceInjected.current = true
 
       primaryWorkspace.current.addChangeListener((evt) => {
-        console.log(evt);
         if(evt.type == Blockly.Events.BLOCK_CHANGE || evt.type === Blockly.Events.MOVE) {
         const qasmString = generateCode().output
         props.setQASM(qasmString)

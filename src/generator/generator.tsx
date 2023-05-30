@@ -55,7 +55,11 @@ enum NodeType {
   IF,
   COMPARISON,
   MEASURE,
-  FORLOOP
+  FORLOOP,
+  YGATE,
+  ZGATE,
+  HADAMARD,
+  CXGATE,
 }
 
 class QNode {
@@ -264,6 +268,39 @@ class XGateNode extends QNode {
   }
 }
 
+class YGateNode extends QNode {
+  index: LiteralNode
+  constructor (val: LiteralNode) {
+    super(NodeType.YGATE)
+    this.index = val
+  }
+}
+class ZGateNode extends QNode {
+  index: LiteralNode
+  constructor (val: LiteralNode) {
+    super(NodeType.ZGATE)
+    this.index = val
+  }
+}
+
+class HadamardGateNode extends QNode {
+  index: LiteralNode
+  constructor (val: LiteralNode) {
+    super(NodeType.HADAMARD)
+    this.index = val
+  }
+}
+
+class CXGateNode extends QNode {
+  index1: LiteralNode
+  index2: LiteralNode
+  constructor (val1: LiteralNode, val2: LiteralNode) {
+    super(NodeType.CXGATE)
+    this.index1 = val1
+    this.index2 = val2;
+  }
+}
+
 class Scope {
   topLevel: ScopeNode
   variables: { [key: string]: number } = {}
@@ -304,7 +341,6 @@ class Scope {
 
     while (current) {
       if (Object.hasOwnProperty.call(current.variables, varName)) {
-        console.log(current.variables, varName);
         current.variables[varName] += by;
         return;
       } else {
@@ -372,6 +408,32 @@ class Scope {
         infoObj.qIdx = Math.max(infoObj.qIdx, idx)
         return [`x q[${idx}];`]
       }
+      case NodeType.YGATE: {
+        const xg = node as XGateNode
+        const idx = this.getValueFromLiteralOrRef(xg.index)
+        infoObj.qIdx = Math.max(infoObj.qIdx, idx)
+        return [`y q[${idx}];`]
+      }
+      case NodeType.ZGATE: {
+        const xg = node as XGateNode
+        const idx = this.getValueFromLiteralOrRef(xg.index)
+        infoObj.qIdx = Math.max(infoObj.qIdx, idx)
+        return [`z q[${idx}];`]
+      }
+      case NodeType.HADAMARD: {
+        const xg = node as XGateNode
+        const idx = this.getValueFromLiteralOrRef(xg.index)
+        infoObj.qIdx = Math.max(infoObj.qIdx, idx)
+        return [`h q[${idx}];`]
+      }
+      case NodeType.CXGATE: {
+        const xg = node as CXGateNode
+        const idx1 = this.getValueFromLiteralOrRef(xg.index1)
+        const idx2 = this.getValueFromLiteralOrRef(xg.index2)
+        infoObj.qIdx = Math.max(infoObj.qIdx, idx1);
+        infoObj.qIdx = Math.max(infoObj.qIdx, idx2);
+        return [`cx q[${idx1}], q[${idx2}];`];
+      }
       case NodeType.REPEAT: {
         let rep = node as RepeatNode
 
@@ -396,7 +458,6 @@ class Scope {
         let fn = node as FuncRefNode
         let fnScope = this.getFunc(fn.getName())
         const fnStr = fnScope.compile(infoObj)
-        console.log(fnStr, 'function str!', fnScope)
         return [`# CALL ${fn.getName()}`, ...fnStr]
       }
       case NodeType.INC: {
@@ -413,7 +474,6 @@ class Scope {
       case NodeType.IF: {
         let ifN = node as IfNode
         if (ifN.body && ifN.comparison) {
-          console.log(ifN)
           const comparison = this.compileNode(ifN.comparison, infoObj)
           const body = this.compileNode(ifN.body, infoObj)
           return [`if(${comparison}) ${body}`]
@@ -423,14 +483,12 @@ class Scope {
       case NodeType.FORLOOP: {
         const forNode = node as ForLoopNode
         if(forNode.scope === this.topLevel) {
-          console.log(forNode)
           const ret: string[] = [];
           const initVal = this.getValueFromName(forNode.defName);
 
 
           return ret;
         } else {
-          console.log('entry1')
           forNode.scope.nodes.unshift(forNode);
 
           let ret: string[] = [];
@@ -509,7 +567,6 @@ class Scope {
             case '<': {
               while(scope.getValueFromName(forNode.compName) < scope.getValueFromLiteralOrRef(forNode.compValue) && currLoop < maxLoops) {
                 ret.push(...scope.compile(infoObj, true));
-                console.log(scope.getValueFromName(forNode.compName), scope.getValueFromLiteralOrRef(forNode.compValue));
                 // @ts-ignore
                 if(OPS2[forNode.update] === OPS2.EQ) scope.updateVar(forNode.updateName, -1);
                 else scope.updateVar(forNode.updateName, 1);
@@ -640,7 +697,6 @@ class Compiler {
       `creg c[${infoObj.cIdx}];`
     ]
     const ret = [...headerInfo, ...compileInfo].join('\n')
-    console.log(ret)
     return ret
   }
 }
@@ -662,7 +718,6 @@ export class qasmGenerator {
 
     this.stack = stack
 
-    console.log(stack)
     for (let i = 0; i < oldStack.length; i++) {
       this.currentScope.add(oldStack[i])
     }
@@ -679,7 +734,39 @@ export class qasmGenerator {
       that.generator.valueToCode(block, 'Qubit', ORDER.ATOMIC)
       const node = new XGateNode(that.stack.pop() as LiteralNode)
       that.stack.push(node)
-      console.log('hit a x gate!')
+      return 'X'
+    }
+
+    this.generator['test_hadamard_gate'] = function (block: Blockly.Block) {
+      that.generator.valueToCode(block, 'Qubit', ORDER.ATOMIC)
+      const node = new HadamardGateNode(that.stack.pop() as LiteralNode)
+      that.stack.push(node)
+      return 'X'
+    }
+
+    this.generator['cx_gate'] = function (block: Blockly.Block) {
+      that.generator.valueToCode(block, 'Qubit-1', ORDER.ATOMIC)
+      that.generator.valueToCode(block, 'Qubit-2', ORDER.ATOMIC)
+
+      const q2 = that.stack.pop() as LiteralNode;
+      const q1 = that.stack.pop() as LiteralNode;
+
+      const node = new CXGateNode(q1, q2);
+      that.stack.push(node)
+      return 'X'
+    }
+
+    this.generator['test_y_gate'] = function (block: Blockly.Block) {
+      that.generator.valueToCode(block, 'Qubit', ORDER.ATOMIC)
+      const node = new YGateNode(that.stack.pop() as LiteralNode)
+      that.stack.push(node)
+      return 'X'
+    }
+
+    this.generator['test_z_gate'] = function (block: Blockly.Block) {
+      that.generator.valueToCode(block, 'Qubit', ORDER.ATOMIC)
+      const node = new ZGateNode(that.stack.pop() as LiteralNode)
+      that.stack.push(node)
       return 'X'
     }
 
@@ -709,12 +796,10 @@ export class qasmGenerator {
 
       that.generator.statementToCode(block, 'Blocks')
 
-      console.log(that.stack, 'current fn stack')
       that.restoreStack(oldStack)
 
       that.currentScope = oldScope
       that.stack.push(fnDef)
-      console.log(fnDef, 'func def!')
       return 'FUNDEF'
     }
 
@@ -769,7 +854,6 @@ export class qasmGenerator {
       that.restoreStack(oldStack)
       that.currentScope = oldScope
 
-      console.log(forLoop)
       that.stack.push(forLoop)
       return 'A'
     }
@@ -794,7 +878,6 @@ export class qasmGenerator {
           ) + branchCode
       }
 
-      console.log(that.stack, 'do IF BLOCK')
       const bodyNode = that.stack.pop() as QNode
 
       code +=
@@ -848,13 +931,11 @@ export class qasmGenerator {
   }
 
   compile (workspace: Blockly.Workspace) {
-    console.log('compiling!')
     this.stack.length = 0
     this.lastNode = null
     this.currentScope = new ScopeNode()
     this.generator.workspaceToCode(workspace)
     this.restoreStack(this.stack)
-    console.log(this.currentScope)
 
     const compiler = new Compiler()
     let output = ''

@@ -28,7 +28,7 @@ export default function CodeArea ({
         onClick={showCircuit}
         className={styles.convertBtn}
       >
-        Show circuit {visible ? "true" : "false"}
+        Show circuit 
       </button>
     </div>
   )
