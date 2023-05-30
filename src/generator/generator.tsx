@@ -324,7 +324,9 @@ class Scope {
       case NodeType.FUNCREF: {
         let fn = node as FuncRefNode
         let fnScope = this.getFunc(fn.getName())
-        return [`# CALL ${fn.getName()}`, ...fnScope.compile(infoObj)]
+        const fnStr = fnScope.compile(infoObj);
+        console.log(fnStr, 'function str!', fnScope);
+        return [`# CALL ${fn.getName()}`, ...fnStr];
       }
       case NodeType.INC: {
         let inc = node as IncrementNode
@@ -469,9 +471,13 @@ export class qasmGenerator {
   }
 
   restoreStack(stack: QNode[]) {
+    const oldStack = this.stack;
+
     this.stack = stack;
-    for(let i = 0; i < stack.length; i++) {
-      this.currentScope.add(stack[i]);
+
+    console.log(stack);
+    for(let i = 0; i < oldStack.length; i++) {
+      this.currentScope.add(oldStack[i]);
     }
   }
 
@@ -483,11 +489,10 @@ export class qasmGenerator {
     }.bind(that)
 
     this.generator['test_x_gate'] = function (block: Blockly.Block) {
-      const oldStack = that.saveStack();
       that.generator.valueToCode(block, 'Qubit', ORDER.ATOMIC)
       const node = new XGateNode(that.stack.pop() as LiteralNode);
-      that.restoreStack(oldStack);
       that.stack.push(node);
+      console.log('hit a x gate!');
       return 'X'
     }
 
@@ -509,22 +514,26 @@ export class qasmGenerator {
     this.generator['custom_function_def'] = function (block: any) {
       var text_name = block.getFieldValue('NAME')
 
+      const oldStack = that.saveStack();
+
       const fnDef = new FuncDefNode(text_name)
       const oldScope = that.currentScope
       that.currentScope = fnDef.scope
-      oldScope.add(fnDef)
 
       that.generator.statementToCode(block, 'Blocks')
 
+      console.log(that.stack, 'current fn stack');
+      that.restoreStack(oldStack);
+
       that.currentScope = oldScope
       that.stack.push(fnDef)
+      console.log(fnDef, 'func def!');
       return 'FUNDEF'
     }
 
     this.generator['custom_function_ref'] = function (block: any) {
       var text_name = block.getFieldValue('NAME')
       const funRef = new FuncRefNode(text_name)
-      that.currentScope.add(funRef)
       that.stack.push(funRef)
       return 'FUNREF'
     }
@@ -534,7 +543,6 @@ export class qasmGenerator {
       var text_input = parseInt(block.getFieldValue('INPUT'))
       var dropdown_type = block.getFieldValue('TYPE')
       const varDefGate = new DefineNode(text_name, new LiteralNode(text_input))
-      that.currentScope.add(varDefGate)
       that.stack.push(varDefGate)
       return 'VAR'
     }
@@ -583,8 +591,6 @@ export class qasmGenerator {
       that.restoreStack(oldStack);
 
       that.stack.push(ifNode)
-      that.currentScope.add(ifNode)
-      console.log(code)
 
       return code + '\n'
     }.bind(this)
@@ -622,10 +628,12 @@ export class qasmGenerator {
   }
 
   compile (workspace: Blockly.Workspace) {
+    console.log('compiling!');
     this.stack.length = 0
     this.lastNode = null
     this.currentScope = new ScopeNode()
     this.generator.workspaceToCode(workspace)
+    this.restoreStack(this.stack);
     console.log(this.currentScope)
 
     const compiler = new Compiler()
@@ -633,7 +641,6 @@ export class qasmGenerator {
     let error: string | null = null
 
     output = compiler.compile(this.currentScope)
-    this.restoreStack(this.stack);
     
    /* try {
     } catch (err) {
