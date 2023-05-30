@@ -38,9 +38,12 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
       })
       workspaceInjected.current = true
 
-      primaryWorkspace.current.addChangeListener(() => {
+      primaryWorkspace.current.addChangeListener((evt) => {
+        console.log(evt);
+        if(evt.type == Blockly.Events.BLOCK_CHANGE || evt.type === Blockly.Events.MOVE) {
         const qasmString = generateCode().output
         props.setQASM(qasmString)
+        }
       })
 
       const blockName = 'entry' // Name of block to add
@@ -56,7 +59,7 @@ const BlocklyComponent = (props: PropsWithChildren<BlocklyComponentProps>) => {
   // create an object that will store the parsed blockly blocks to a collection of qasm nodes
 
   // populate the collection with nodes
-  const generateCode = () => {
+  function generateCode() {
     const workspace = primaryWorkspace.current;
     if(!workspace) throw 'No workspace found!';
     return new qasmGenerator().compile(workspace);
