@@ -28,7 +28,7 @@ addBlock('measurement_gate_true', {
     {
       type: 'field_number',
       name: 'I0',
-      value: 0,
+      value: 0
     },
     {
       type: 'field_dropdown',
@@ -41,7 +41,7 @@ addBlock('measurement_gate_true', {
     {
       type: 'field_number',
       name: 'I1',
-      value: 0,
+      value: 0
     }
   ],
   args1: [],
@@ -195,15 +195,59 @@ addBlock('custom_function_ref', {
 addBlock('loop_block', {
   //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#4fx65f
   type: 'loop_block',
-  message0: 'Loops %1 %2',
+  message0: 'FOR %1 = %2, %3 %4 %5, %7%6',
   args0: [
     {
-      type: 'input_value',
-      name: 'NUM'
+      type: 'field_input',
+      name: 'var1',
+      text: 'var'
     },
     {
+      type: 'field_number',
+      name: 'I1',
+      value: 0
+    },
+    {
+      type: 'field_input',
+      name: 'var2',
+      text: 'var'
+    },
+    {
+      type: 'field_dropdown',
+      name: 'OP',
+      options: [
+        ['=', 'EQ'],
+        ['\u2260', 'NEQ'],
+        ['\u200F<', 'LT'],
+        ['\u200F\u2264', 'LTE'],
+        ['\u200F>', 'GT'],
+        ['\u200F\u2265', 'GTE']
+      ]
+    },
+    {
+      type: 'field_number',
+      name: 'I2',
+      value: 0
+    },
+    {
+      type: 'field_dropdown',
+      name: 'OP1',
+      options: [
+        ['--', 'EQ'],
+        ['++', 'NEQ'],
+      ]
+    },
+    {
+      type: 'field_input',
+      name: 'var3',
+      text: 'var'
+    },
+  ],
+  message1: 'DO %1',
+  args1: [
+    {
       type: 'input_statement',
-      name: 'Blocks'
+      name: 'DO0'
     }
   ],
   inputsInline: true,

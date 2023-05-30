@@ -54,7 +54,8 @@ enum NodeType {
   REG,
   IF,
   COMPARISON,
-  MEASURE
+  MEASURE,
+  FORLOOP
 }
 
 class QNode {
@@ -165,17 +166,47 @@ class ScopeNode extends QNode {
 }
 
 class MeasureNode extends QNode {
-  r0: string;
-  i0: number;
-  r1: string;
-  i1: number;
+  r0: string
+  i0: number
+  r1: string
+  i1: number
 
-  constructor(r0: string, i0: number, r1: string, i1: number){
-    super(NodeType.MEASURE);
-    this.r0 = r0;
-    this.r1 = r1;
-    this.i0 = i0;
-    this.i1 = i1;
+  constructor (r0: string, i0: number, r1: string, i1: number) {
+    super(NodeType.MEASURE)
+    this.r0 = r0
+    this.r1 = r1
+    this.i0 = i0
+    this.i1 = i1
+  }
+}
+
+class ForLoopNode extends QNode {
+  scope = new ScopeNode()
+  defName: string
+  defValue: number
+  compName: string
+  comp: string
+  compValue: LiteralNode 
+  updateName: string
+  update: string
+
+  constructor (
+    defName: string,
+    defValue: number,
+    compName: string,
+    comp: string,
+    compValue: LiteralNode,
+    updateName: string,
+    update: string
+  ) {
+    super(NodeType.FORLOOP)
+    this.defName = defName
+    this.defValue = defValue
+    this.compName = compName
+    this.comp = comp
+    this.compValue = compValue
+    this.updateName = updateName
+    this.update = update
   }
 }
 
@@ -267,31 +298,53 @@ class Scope {
     throw 'Undefined function: ' + name
   }
 
-  private getValueFromLiteralOrRef (node: LiteralNode): number {
-    if(!node) return 0;
+  updateVar(name: string, by: number) {
+    let current: Scope | null = this
+    const varName = name
+
+    while (current) {
+      if (Object.hasOwnProperty.call(current.variables, varName)) {
+        console.log(current.variables, varName);
+        current.variables[varName] += by;
+        return;
+      } else {
+        current = current.parent
+      }
+    }
+
+    throw `Undefined variable: ${varName}`
+  }
+
+  getValueFromName (name: string) {
+    let current: Scope | null = this
+    let found = false
+    let val = -1
+    const varName = name
+
+    while (current) {
+      if (Object.hasOwnProperty.call(current.variables, varName)) {
+        found = true
+        val = current.variables[varName]
+        return val
+      } else {
+        current = current.parent
+      }
+    }
+
+    throw `Undefined variable: ${varName}`
+  }
+
+  getValueFromLiteralOrRef (node: LiteralNode): number {
+    if (!node) return 0
     if (node.type === NodeType.LITERAL) {
       return node.getValue()
     } else {
-      if(node.type !== NodeType.REFERENCE) {
-        return 0;
+      if (node.type !== NodeType.REFERENCE) {
+        return 0
       }
       const ref = node as ReferenceNode
-      let current: Scope | null = this
-      let found = false
-      let val = -1
       const varName = ref.getName()
-
-      while (current) {
-        if (Object.hasOwnProperty.call(current.variables, varName)) {
-          found = true
-          val = current.variables[varName]
-          return val
-        } else {
-          current = current.parent
-        }
-      }
-
-      throw `Undefined variable: ${varName}`
+      return this.getValueFromName(varName)
     }
   }
 
@@ -299,14 +352,10 @@ class Scope {
     switch (node.type) {
       case NodeType.DEFINE: {
         let def = node as DefineNode
-        this.variables[def.getName()] = this.getValueFromLiteralOrRef(
+        /*this.variables[def.getName()] = this.getValueFromLiteralOrRef(
           def.getValue()
-        )
+        )*/
         return [
-          `# DEFINE ${def.getName()} AS ${this.compileNode(
-            def.getValue(),
-            infoObj
-          )}`
         ]
       }
       case NodeType.FUNCDEF: {
@@ -337,16 +386,18 @@ class Scope {
         return body
       }
       case NodeType.MEASURE: {
-        const measure = node as MeasureNode;
-        return [`measure ${measure.r0}[${measure.i0}] -> ${measure.r1}[${measure.i1}];`]
-        return [];
+        const measure = node as MeasureNode
+        return [
+          `measure ${measure.r0}[${measure.i0}] -> ${measure.r1}[${measure.i1}];`
+        ]
+        return []
       }
       case NodeType.FUNCREF: {
         let fn = node as FuncRefNode
         let fnScope = this.getFunc(fn.getName())
-        const fnStr = fnScope.compile(infoObj);
-        console.log(fnStr, 'function str!', fnScope);
-        return [`# CALL ${fn.getName()}`, ...fnStr];
+        const fnStr = fnScope.compile(infoObj)
+        console.log(fnStr, 'function str!', fnScope)
+        return [`# CALL ${fn.getName()}`, ...fnStr]
       }
       case NodeType.INC: {
         let inc = node as IncrementNode
@@ -362,22 +413,128 @@ class Scope {
       case NodeType.IF: {
         let ifN = node as IfNode
         if (ifN.body && ifN.comparison) {
-          console.log(ifN);
+          console.log(ifN)
           const comparison = this.compileNode(ifN.comparison, infoObj)
           const body = this.compileNode(ifN.body, infoObj)
           return [`if(${comparison}) ${body}`]
         }
         return ['']
       }
+      case NodeType.FORLOOP: {
+        const forNode = node as ForLoopNode
+        if(forNode.scope === this.topLevel) {
+          console.log(forNode)
+          const ret: string[] = [];
+          const initVal = this.getValueFromName(forNode.defName);
+
+
+          return ret;
+        } else {
+          console.log('entry1')
+          forNode.scope.nodes.unshift(forNode);
+
+          let ret: string[] = [];
+          const scope = this.getChildScope(forNode.scope);
+          scope.preParse();
+
+          const OPERATORS = {
+            EQ: '==',
+            NEQ: '!=',
+            LT: '<',
+            LTE: '<=',
+            GT: '>',
+            GTE: '>='
+          }
+
+          const OPS2 = {
+            EQ: '--',
+            NEG: '++',
+          }
+
+
+          let maxLoops = 999;
+          let currLoop = 0;
+          // @ts-ignore
+          switch(OPERATORS[forNode.comp]) {
+            case '==': {
+              while(scope.getValueFromName(forNode.compName) == scope.getValueFromLiteralOrRef(forNode.compValue) && currLoop < maxLoops) {
+                ret.push(...scope.compile(infoObj, true));
+                // @ts-ignore
+                if(OPS2[forNode.update] === OPS2.EQ) scope.updateVar(forNode.updateName, -1);
+                else scope.updateVar(forNode.updateName, 1);
+                currLoop++
+              }
+              break;
+            }
+            case '!=': {
+              while(scope.getValueFromName(forNode.compName) != scope.getValueFromLiteralOrRef(forNode.compValue) && currLoop < maxLoops) {
+                ret.push(...scope.compile(infoObj, true));
+                // @ts-ignore
+                if(OPS2[forNode.update] === OPS2.EQ) scope.updateVar(forNode.updateName, -1);
+                else scope.updateVar(forNode.updateName, 1);
+                currLoop++
+              }
+              break;
+            }
+            case '>=': {
+              while(scope.getValueFromName(forNode.compName) >= scope.getValueFromLiteralOrRef(forNode.compValue) && currLoop < maxLoops) {
+                ret.push(...scope.compile(infoObj, true));
+                // @ts-ignore
+                if(OPS2[forNode.update] === OPS2.EQ) scope.updateVar(forNode.updateName, -1);
+                else scope.updateVar(forNode.updateName, 1);
+                currLoop++
+              }
+              break;
+            }
+            case '<=': {
+              while(scope.getValueFromName(forNode.compName) <= scope.getValueFromLiteralOrRef(forNode.compValue) && currLoop < maxLoops) {
+                ret.push(...scope.compile(infoObj, true));
+                // @ts-ignore
+                if(OPS2[forNode.update] === OPS2.EQ) scope.updateVar(forNode.updateName, -1);
+                else scope.updateVar(forNode.updateName, 1);
+                currLoop++
+              }
+              break;
+            }
+            case '>': {
+              while(scope.getValueFromName(forNode.compName) > scope.getValueFromLiteralOrRef(forNode.compValue) && currLoop < maxLoops) {
+                ret.push(...scope.compile(infoObj, true));
+                // @ts-ignore
+                if(OPS2[forNode.update] === OPS2.EQ) scope.updateVar(forNode.updateName, -1);
+                else scope.updateVar(forNode.updateName, 1);
+                currLoop++;
+              }
+              break;
+            }
+            case '<': {
+              while(scope.getValueFromName(forNode.compName) < scope.getValueFromLiteralOrRef(forNode.compValue) && currLoop < maxLoops) {
+                ret.push(...scope.compile(infoObj, true));
+                console.log(scope.getValueFromName(forNode.compName), scope.getValueFromLiteralOrRef(forNode.compValue));
+                // @ts-ignore
+                if(OPS2[forNode.update] === OPS2.EQ) scope.updateVar(forNode.updateName, -1);
+                else scope.updateVar(forNode.updateName, 1);
+                currLoop++
+              }
+              break;
+            }
+          }
+
+          if(currLoop >= maxLoops) {
+            return ['# LOOP SIZE EXCEEDED!'];
+          }
+
+          return ret;
+        }
+      }
       case NodeType.COMPARISON: {
-        const c = node as ComparisonNode;
-        const a = this.compileNode(c.condA, infoObj);
-        const b = this.compileNode(c.condB, infoObj);
-        return [`${a} ${c.check} ${b}`];
+        const c = node as ComparisonNode
+        const a = this.compileNode(c.condA, infoObj)
+        const b = this.compileNode(c.condB, infoObj)
+        return [`${a} ${c.check} ${b}`]
       }
       case NodeType.REG: {
-        const r = node as RegisterNode;
-        return [r.regName]; 
+        const r = node as RegisterNode
+        return [r.regName]
       }
       case NodeType.PRINT: {
         const prt = node as PrintNode
@@ -390,9 +547,7 @@ class Scope {
     return []
   }
 
-  compile (infoObj: InfoObj) {
-    let str: string[] = []
-
+  preParse(){
     // need to hoist function def's and var defs to the top to match the following scheme
 
     // var defs
@@ -432,8 +587,20 @@ class Scope {
       if (node.type === NodeType.FUNCDEF) {
         const fnNode = node as FuncDefNode
         this.funcs[fnNode.getName()] = this.getChildScope(fnNode.scope)
+      } else if(node.type === NodeType.DEFINE) {
+        const def = node as DefineNode;
+        this.variables[def.getName()] = this.getValueFromLiteralOrRef(
+          def.getValue()
+        )
       }
     }
+
+  }
+
+  compile (infoObj: InfoObj, skipParse = false) {
+    let str: string[] = []
+
+    if(!skipParse) this.preParse();
 
     for (let i = 0; i < this.topLevel.nodes.length; i++) {
       let node = this.topLevel.nodes[i]
@@ -484,20 +651,20 @@ export class qasmGenerator {
   lastNode: QNode | null = null
   stack: QNode[] = []
 
-  saveStack(){
-    const stack = this.stack;
-    this.stack = [];
-    return stack;
+  saveStack () {
+    const stack = this.stack
+    this.stack = []
+    return stack
   }
 
-  restoreStack(stack: QNode[]) {
-    const oldStack = this.stack;
+  restoreStack (stack: QNode[]) {
+    const oldStack = this.stack
 
-    this.stack = stack;
+    this.stack = stack
 
-    console.log(stack);
-    for(let i = 0; i < oldStack.length; i++) {
-      this.currentScope.add(oldStack[i]);
+    console.log(stack)
+    for (let i = 0; i < oldStack.length; i++) {
+      this.currentScope.add(oldStack[i])
     }
   }
 
@@ -510,9 +677,9 @@ export class qasmGenerator {
 
     this.generator['test_x_gate'] = function (block: Blockly.Block) {
       that.generator.valueToCode(block, 'Qubit', ORDER.ATOMIC)
-      const node = new XGateNode(that.stack.pop() as LiteralNode);
-      that.stack.push(node);
-      console.log('hit a x gate!');
+      const node = new XGateNode(that.stack.pop() as LiteralNode)
+      that.stack.push(node)
+      console.log('hit a x gate!')
       return 'X'
     }
 
@@ -534,7 +701,7 @@ export class qasmGenerator {
     this.generator['custom_function_def'] = function (block: any) {
       var text_name = block.getFieldValue('NAME')
 
-      const oldStack = that.saveStack();
+      const oldStack = that.saveStack()
 
       const fnDef = new FuncDefNode(text_name)
       const oldScope = that.currentScope
@@ -542,12 +709,12 @@ export class qasmGenerator {
 
       that.generator.statementToCode(block, 'Blocks')
 
-      console.log(that.stack, 'current fn stack');
-      that.restoreStack(oldStack);
+      console.log(that.stack, 'current fn stack')
+      that.restoreStack(oldStack)
 
       that.currentScope = oldScope
       that.stack.push(fnDef)
-      console.log(fnDef, 'func def!');
+      console.log(fnDef, 'func def!')
       return 'FUNDEF'
     }
 
@@ -574,21 +741,44 @@ export class qasmGenerator {
       return ['REF', '', 1]
     }.bind(this)
 
-    this.generator['measurement_gate_true'] = function(block: Blockly.Block) {
-
-      const r0 = block.getFieldValue('R0') as string;
-      const i0 = block.getFieldValue('I0') as number;
-      const r1 = block.getFieldValue('R1') as string;
-      const i1 = block.getFieldValue('I1') as number;
-      that.stack.push(new MeasureNode(r0, i0, r1, i1));
+    this.generator['measurement_gate_true'] = function (block: Blockly.Block) {
+      const r0 = block.getFieldValue('R0') as string
+      const i0 = block.getFieldValue('I0') as number
+      const r1 = block.getFieldValue('R1') as string
+      const i1 = block.getFieldValue('I1') as number
+      that.stack.push(new MeasureNode(r0, i0, r1, i1))
       return ''
+    }
+
+    this.generator['loop_block'] = function (block: Blockly.Block) {
+      const var1 = block.getFieldValue('var1') as string
+      const in1 = block.getFieldValue('I1') as number
+      const var2 = block.getFieldValue('var1') as string
+      const comp = block.getFieldValue('OP') as string
+      const in2 = block.getFieldValue('I2') as number
+      const var3 = block.getFieldValue('var3') as string
+      const update = block.getFieldValue('OP1') as string
+
+      const forLoop = new ForLoopNode(var1, in1, var2, comp, new LiteralNode(in2), var3, update)
+      const oldStack = that.saveStack()
+      const oldScope = that.currentScope
+      that.currentScope = forLoop.scope
+
+      that.stack.push(new DefineNode(var1, new LiteralNode(in1)))
+      let branchCode = that.generator.statementToCode(block, 'DO0')
+      that.restoreStack(oldStack)
+      that.currentScope = oldScope
+
+      console.log(forLoop)
+      that.stack.push(forLoop)
+      return 'A'
     }
 
     this.generator['if_else'] = function (block: any) {
       // If/elseif/else condition.
       let n = 0
       let code = ''
-      const oldStack = that.saveStack();
+      const oldStack = that.saveStack()
 
       const conditionCode =
         that.generator.valueToCode(block, 'IF' + n, ORDER.NONE) || 'false'
@@ -604,7 +794,7 @@ export class qasmGenerator {
           ) + branchCode
       }
 
-      console.log(that.stack, 'do IF BLOCK');
+      console.log(that.stack, 'do IF BLOCK')
       const bodyNode = that.stack.pop() as QNode
 
       code +=
@@ -618,7 +808,7 @@ export class qasmGenerator {
 
       const ifNode = new IfNode(comparison, bodyNode)
 
-      that.restoreStack(oldStack);
+      that.restoreStack(oldStack)
 
       that.stack.push(ifNode)
 
@@ -658,12 +848,12 @@ export class qasmGenerator {
   }
 
   compile (workspace: Blockly.Workspace) {
-    console.log('compiling!');
+    console.log('compiling!')
     this.stack.length = 0
     this.lastNode = null
     this.currentScope = new ScopeNode()
     this.generator.workspaceToCode(workspace)
-    this.restoreStack(this.stack);
+    this.restoreStack(this.stack)
     console.log(this.currentScope)
 
     const compiler = new Compiler()
@@ -671,8 +861,8 @@ export class qasmGenerator {
     let error: string | null = null
 
     output = compiler.compile(this.currentScope)
-    
-   /* try {
+
+    /* try {
     } catch (err) {
       error = err + ''
     }*/
