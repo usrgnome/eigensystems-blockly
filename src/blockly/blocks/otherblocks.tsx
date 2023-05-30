@@ -53,7 +53,6 @@ addBlock('measurement_gate_true', {
   helpUrl: ''
 })
 
-
 addBlock('logic_compare', {
   type: 'logic_compare',
   message0: '%1 %2 %3',
@@ -85,7 +84,6 @@ addBlock('logic_compare', {
   helpUrl: '%{BKY_LOGIC_COMPARE_HELPURL}',
   extensions: ['logic_compare', 'logic_op_tooltip']
 })
-
 
 addBlock('if_else', {
   type: 'controls_ifelse',
