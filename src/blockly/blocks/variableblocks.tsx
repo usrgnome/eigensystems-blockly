@@ -11,40 +11,6 @@ const addBlock = (name: string, json: object) => {
     };
 }
 
-addBlock('comparison_block', {
-    "type": "comparison_block",
-    "message0": "%1 %2 %3",
-    "args0": [
-        {
-            "type": "input_value",
-            "name": "A",
-            "check": "Number"
-        },
-        {
-            "type": "field_dropdown",
-            "name": "OPERATOR",
-            "options": [
-                ["=", "EQ"],
-                ["\u2260", "NEQ"],
-                ["<", "LT"],
-                ["\u2264", "LTE"],
-                [">", "GT"],
-                ["\u2265", "GTE"]
-            ]
-        },
-        {
-            "type": "input_value",
-            "name": "B",
-            "check": "Number"
-        }
-    ],
-    "inputsInline": true,
-    "output": "Boolean",
-    "colour": 210,
-    "tooltip": "Comparison block",
-    "helpUrl": ""
-})
-
 //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#thggpb
 addBlock('var_def_gate', {
     "type": "var_gate",
@@ -103,86 +69,6 @@ addBlock('var_ref_gate', {
     ],
     "inputsInline": true,
     "output": null,
-    "colour": "%{BKY_VARIABLES_HUE}",
-    "tooltip": "",
-    "helpUrl": ""
-});
-
-//https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#f7i8nr
-addBlock('assignment_block', {
-    "type": "assignment_block",
-    "message0": "%1 %2 %3 = %4 %5",
-    "args0": [
-        {
-            "type": "field_input",
-            "name": "NAME",
-            "text": "Name"
-        },
-        {
-            "type": "input_dummy"
-        },
-        {
-            "type": "input_value",
-            "name": "lhs"
-        },
-        {
-            "type": "input_dummy"
-        },
-        {
-            "type": "input_value",
-            "name": "rhs"
-        }
-    ],
-    "inputsInline": true,
-    "previousStatement": null,
-    "nextStatement": null,
-    "colour": "%{BKY_VARIABLES_HUE}",
-    "tooltip": "",
-    "helpUrl": ""
-});
-
-//https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#53fu5j
-addBlock('expression_block', {
-    "type": "expression_block",
-    "message0": "%1 %2 %3 %4 %5 %6",
-    "args0": [
-        {
-            "type": "field_input",
-            "name": "NAME",
-            "text": "Name"
-        },
-        {
-            "type": "input_dummy"
-        },
-        {
-            "type": "input_value",
-            "name": "lhs"
-        },
-        {
-            "type": "field_dropdown",
-            "name": "OPERATOR",
-            "options": [
-                [
-                    "+",
-                    "ADDITION"
-                ],
-                [
-                    "-",
-                    "SUBTRACTION"
-                ]
-            ]
-        },
-        {
-            "type": "input_dummy"
-        },
-        {
-            "type": "input_value",
-            "name": "rhs"
-        }
-    ],
-    "inputsInline": true,
-    "previousStatement": null,
-    "nextStatement": null,
     "colour": "%{BKY_VARIABLES_HUE}",
     "tooltip": "",
     "helpUrl": ""
