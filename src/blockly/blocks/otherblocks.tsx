@@ -74,7 +74,7 @@ addBlock('logic_compare', {
       ]
     },
     {
-      type: 'input_value',
+      type: 'field_number',
       name: 'B'
     }
   ],

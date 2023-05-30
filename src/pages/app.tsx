@@ -53,6 +53,7 @@ export default function AppContainer ({
   let circuit, svg;
   if (mode === 'inspect') {
     circuit = new QuantumCircuit(3)
+    console.log(qasmBox);
     circuit.importQASM(qasmBox, (err: string[]) => {
       if (err && err.length > 0) return console.log('error', qasmBox, err)
     })

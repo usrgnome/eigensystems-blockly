@@ -396,7 +396,7 @@ class Scope {
       }
       case NodeType.FUNCDEF: {
         const fn = node as FuncDefNode
-        return [`# DEF FUNC ${fn.getName()}`]
+        return [``]
       }
       case NodeType.LITERAL: {
         let lit = node as LiteralNode
@@ -440,7 +440,7 @@ class Scope {
         const childScope = this.getChildScope(rep.scope)
         let loopTimes = this.getValueFromLiteralOrRef(rep.loopTimes)
 
-        let body: string[] = [`# LOOP {...} ${loopTimes} TIMES`]
+        let body: string[] = [``]
 
         for (let i = 0; i < loopTimes; i++) {
           body.push(...childScope.compile(infoObj))
@@ -458,7 +458,7 @@ class Scope {
         let fn = node as FuncRefNode
         let fnScope = this.getFunc(fn.getName())
         const fnStr = fnScope.compile(infoObj)
-        return [`# CALL ${fn.getName()}`, ...fnStr]
+        return [...fnStr]
       }
       case NodeType.INC: {
         let inc = node as IncrementNode
@@ -466,7 +466,7 @@ class Scope {
         const varName = inc.variable.getName()
         const incValue = this.getValueFromLiteralOrRef(inc.incValue)
         this.variables[inc.variable.getName()] += incValue
-        return [`# INC ${varName} BY ${incValue}`]
+        return []
       }
       case NodeType.REFERENCE: {
         break
@@ -577,7 +577,7 @@ class Scope {
           }
 
           if(currLoop >= maxLoops) {
-            return ['# LOOP SIZE EXCEEDED!'];
+            return ['// LOOP SIZE EXCEEDED!'];
           }
 
           return ret;
@@ -915,14 +915,13 @@ export class qasmGenerator {
           ? that.generator.ORDER_EQUALITY
           : that.generator.ORDER_RELATIONAL
       const argument0 = that.generator.valueToCode(block, 'A', order) || '0'
-      const argument1 = that.generator.valueToCode(block, 'B', order) || '0'
+      const argument1 = that.generator.valueToCode(block, 'B', order) || 0
       const code = argument0 + ' ' + operator + ' ' + argument1
 
       const node = new ComparisonNode()
       const $a = that.stack.pop() as QNode
-      const $b = that.stack.pop() as QNode
-      node.condA = $b
-      node.condB = $a
+      node.condA = $a; 
+      node.condB = new LiteralNode(argument1);
       node.check = operator
       that.stack.push(node)
 
